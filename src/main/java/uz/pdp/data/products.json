@@ -1,0 +1,9 @@
+[ {
+  "id" : "a863f0ee-c298-47d9-b47b-4ef3d6e02255",
+  "active" : true,
+  "name" : "Smartphone",
+  "price" : 1000.0,
+  "quantity" : 8,
+  "categoryId" : "110a3acb-9dc5-467d-bf9b-2e7b63b40d9f",
+  "sellerId" : "d8c94be6-2f85-4039-bc5b-cc47da10702d"
+} ]
