@@ -10,7 +10,6 @@ import uz.pdp.base.BaseModel;
 import java.util.UUID;
 
 @EqualsAndHashCode(callSuper = true)
-@JacksonXmlRootElement(localName = "user")
 @NoArgsConstructor
 @AllArgsConstructor
 @Data

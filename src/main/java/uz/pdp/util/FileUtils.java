@@ -1,7 +1,5 @@
 package uz.pdp.util;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -11,9 +9,6 @@ import lombok.RequiredArgsConstructor;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -23,10 +18,6 @@ public class FileUtils {
     private static final ObjectMapper objectMapper;
     private static final XmlMapper xmlMapper;
 
-    /**
-     * Static block to initialize the ObjectMapper and XmlMapper with specific configurations.
-     * Enables PROPAGATE_TRANSIENT_MARKER to handle transient fields correctly.
-     */
     static {
         objectMapper = JsonMapper.builder()
                 .enable(MapperFeature.PROPAGATE_TRANSIENT_MARKER)

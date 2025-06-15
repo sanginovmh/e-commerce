@@ -4,6 +4,7 @@ import uz.pdp.base.BaseService;
 import uz.pdp.exception.InvalidCategoryException;
 import uz.pdp.model.Category;
 import uz.pdp.util.FileUtils;
+import uz.pdp.xmlwrapper.CategoryList;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -17,7 +18,7 @@ public class CategoryService implements BaseService<Category> {
     public CategoryService() {
         try {
             categories = readCategories();
-        }catch (IOException e){
+        } catch (IOException e) {
             categories = new ArrayList<>();
         }
     }
@@ -25,7 +26,7 @@ public class CategoryService implements BaseService<Category> {
     @Override
     public void add(Category category) throws IOException, InvalidCategoryException {
         categories = readCategories();
-        if (isValidCategory(category)) {
+        if (isCategoryValid(category)) {
             categories.add(category);
             save();
         } else {
@@ -44,7 +45,7 @@ public class CategoryService implements BaseService<Category> {
     }
 
     @Override
-    public boolean update(UUID id, Category category)throws IOException {
+    public boolean update(UUID id, Category category) throws IOException {
         Category found = get(id);
         if (found != null && found.isActive()) {
             found.setName(category.getName());
@@ -56,36 +57,36 @@ public class CategoryService implements BaseService<Category> {
     }
 
     @Override
-    public void remove(UUID id) throws IOException{
-        for (Category category : categories){
-            if (category.isActive() && category.getId().equals(id)){
+    public void remove(UUID id) throws IOException {
+        for (Category category : categories) {
+            if (category.isActive() && category.getId().equals(id)) {
                 category.setActive(false);
-                deleteChildCategories(category.getId());
+                removeChildCategories(category.getId());
 
                 save();
             }
         }
     }
 
-    public void deleteChildCategories(UUID id)throws IOException{
-        if (id == null) return;
-        ArrayList<Category> childCategories = new ArrayList<>();
-        for (Category category : categories){
-            if (category.isActive() && category.getParentId().equals(id)){
-                childCategories.add(category);
+    public void removeChildCategories(UUID categoryId) throws IOException {
+        if (categoryId == null) return;
+        ArrayList<Category> children = new ArrayList<>();
+        for (Category category : categories) {
+            if (category.isActive() && category.getParentId().equals(categoryId)) {
+                children.add(category);
             }
         }
-        if (childCategories.isEmpty()) return;
-        for (Category category : childCategories){
+        if (children.isEmpty()) return;
+        for (Category category : children) {
             category.setActive(false);
-            deleteChildCategories(category.getId());
+            removeChildCategories(category.getId());
         }
         save();
     }
 
-    private boolean isValidCategory(Category category) {
-        for (Category existingCategory : categories) {
-            if (existingCategory.isActive() && existingCategory.getName().equalsIgnoreCase(category.getName())) {
+    private boolean isCategoryValid(Category category) {
+        for (Category c : categories) {
+            if (c.isActive() && c.getName().equalsIgnoreCase(category.getName())) {
                 return false;
             }
         }
@@ -106,9 +107,9 @@ public class CategoryService implements BaseService<Category> {
         return isLast(category.getId());
     }
 
-    public boolean isLast(UUID categoryId){
-        for (Category category : categories){
-            if (category.isActive() && category.getParentId().equals(categoryId)){
+    public boolean isLast(UUID categoryId) {
+        for (Category category : categories) {
+            if (category.isActive() && category.getParentId().equals(categoryId)) {
                 return false;
             }
         }
@@ -126,11 +127,17 @@ public class CategoryService implements BaseService<Category> {
     }
 
     private void save() throws IOException {
-        FileUtils.writeToXml(FILE_NAME, categories);
+        CategoryList categoryList = new CategoryList(categories);
+        FileUtils.writeToXml(FILE_NAME, categoryList);
     }
 
     private List<Category> readCategories() throws IOException {
         return FileUtils.readFromXml(FILE_NAME, Category.class);
+    }
+
+    public void clear() throws IOException {
+        categories.clear();
+        save();
     }
 }
 

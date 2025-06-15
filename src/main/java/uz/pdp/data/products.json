@@ -1,9 +1,1 @@
-[ {
-  "id" : "e1b34a35-9337-4550-bb58-476b9dfdad9d",
-  "active" : true,
-  "name" : "Laptop",
-  "price" : 1000.0,
-  "quantity" : 5,
-  "categoryId" : "0b2ca920-6059-4721-bb38-0f554dc19b1c",
-  "sellerId" : "b3352bd0-9839-4687-8a20-2da0be198412"
-} ]
+[ ]

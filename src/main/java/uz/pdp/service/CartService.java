@@ -1,6 +1,6 @@
 package uz.pdp.service;
 
-import uz.pdp.abstracts.CartItemAbstract;
+import uz.pdp.abstraction.CartItemAbstract;
 import uz.pdp.base.BaseService;
 import uz.pdp.exception.InvalidCartException;
 import uz.pdp.model.Cart;

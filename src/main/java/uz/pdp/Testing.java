@@ -13,12 +13,13 @@ import java.util.UUID;
 
 public class Testing {
     public static void main(String[] args) throws Exception {
-        ProductService productService = new ProductService();
-        UserService userService = new UserService();
 
-        System.out.println(productService.getByName("Laptop"));
-        System.out.println(userService.getByUsername("admin"));
+    }
 
-        String randomUsername = UUID.randomUUID().toString();
+    private static void clear() throws Exception {
+        (new CartService()).clear();
+        (new CategoryService()).clear();
+        (new ProductService()).clear();
+        (new UserService()).clear();
     }
 }

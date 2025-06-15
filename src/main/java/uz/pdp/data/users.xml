@@ -1,18 +1,1 @@
-<ArrayList>
-  <item>
-    <id>d8c94be6-2f85-4039-bc5b-cc47da10702d</id>
-    <active>true</active>
-    <fullName>Admin User</fullName>
-    <username>admin</username>
-    <password>admin123</password>
-    <role>ADMIN</role>
-  </item>
-  <item>
-    <id>96fb602f-cbeb-4db2-93ae-7a3c7c492df6</id>
-    <active>true</active>
-    <fullName>John</fullName>
-    <username>john</username>
-    <password>pass</password>
-    <role>CUSTOMER</role>
-  </item>
-</ArrayList>
+<users/>
