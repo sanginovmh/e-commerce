@@ -32,6 +32,9 @@ public class ProductService implements BaseService<Product> {
             save();
         } else {
             Product existingProduct = getByName(product.getName());
+            if (existingProduct == null) {
+                throw new InvalidProductException("Product with name " + product.getName() + "must have positive parameters.");
+            }
             product.setQuantity(existingProduct.getQuantity() + product.getQuantity());
             update(existingProduct.getId(), product);
         }

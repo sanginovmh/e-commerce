@@ -9,24 +9,14 @@ import uz.pdp.service.CategoryService;
 import uz.pdp.service.ProductService;
 import uz.pdp.service.UserService;
 
+import java.util.UUID;
+
 public class Testing {
     public static void main(String[] args) throws Exception {
-        UserService userService = new UserService();
-        CategoryService categoryService = new CategoryService();
         ProductService productService = new ProductService();
-        CartService cartService = new CartService();
+        UserService userService = new UserService();
 
-        User admin = userService.getByUsername("admin");
-        System.out.println("Admin id: " + admin.getId());
-        Category category = new Category("Electronics", null);
-        categoryService.add(category);
-        Product product = new Product("Smartphone", 1000.0, 10, category.getId(), admin.getId());
-        productService.add(product);
-        User customer = new User("John", "john", "pass", User.UserRole.CUSTOMER);
-        userService.add(customer);
-        Cart cart = new Cart(customer.getId());
-        cartService.add(cart);
-        cartService.addItemToCart(customer.getId(), product, 2);
-        cartService.buyCart(customer.getId(), productService);
+        System.out.println(productService.getByName("Laptop"));
+        System.out.println(userService.getByUsername("admin"));
     }
 }

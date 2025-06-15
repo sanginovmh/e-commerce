@@ -1,9 +1,9 @@
 [ {
-  "id" : "a863f0ee-c298-47d9-b47b-4ef3d6e02255",
+  "id" : "e1b34a35-9337-4550-bb58-476b9dfdad9d",
   "active" : true,
-  "name" : "Smartphone",
+  "name" : "Laptop",
   "price" : 1000.0,
-  "quantity" : 8,
-  "categoryId" : "110a3acb-9dc5-467d-bf9b-2e7b63b40d9f",
-  "sellerId" : "d8c94be6-2f85-4039-bc5b-cc47da10702d"
+  "quantity" : 5,
+  "categoryId" : "0b2ca920-6059-4721-bb38-0f554dc19b1c",
+  "sellerId" : "b3352bd0-9839-4687-8a20-2da0be198412"
 } ]

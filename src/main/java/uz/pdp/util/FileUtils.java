@@ -18,7 +18,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public class FileUtils {
-    private static final String PATH = "src/main/java/uz/pdp/data";
+    private static final String PATH = "src/main/java/uz/pdp/data/";
 
     private static final ObjectMapper objectMapper;
     private static final XmlMapper xmlMapper;
@@ -48,7 +48,7 @@ public class FileUtils {
      * @throws IOException if an I/O error occurs
      */
     public static <T> void writeToJson(String fileName, T t) throws IOException {
-        objectMapper.writeValue(new File(PATH + "/" + fileName), t);
+        objectMapper.writeValue(new File(PATH + fileName), t);
     }
 
     /**
@@ -61,12 +61,8 @@ public class FileUtils {
      */
     public static <T> List<T> readFromJson(String fileName, Class<T> clazz) throws IOException {
         try {
-            List<LinkedHashMap> raw = objectMapper.readValue(
-                    new File(PATH + "/" + fileName),
-                    new TypeReference<>() {
-            });
-
-            return convertToList(raw, clazz);
+            return objectMapper.readValue(new File(PATH + fileName),
+                    objectMapper.getTypeFactory().constructCollectionType(List.class, clazz));
         } catch (IOException e) {
             if (e.getMessage().contains("No content to map due to end-of-input")) {
                 return List.of();
@@ -84,7 +80,7 @@ public class FileUtils {
      * @throws IOException if an I/O error occurs
      */
     public static <T> void writeToXml(String fileName, T t) throws IOException {
-        xmlMapper.writeValue(new File(PATH + "/" + fileName), t);
+        xmlMapper.writeValue(new File(PATH + fileName), t);
     }
 
     /**
@@ -98,26 +94,13 @@ public class FileUtils {
      */
     public static <T> List<T> readFromXml(String fileName, Class<T> clazz) throws IOException {
         try {
-            List<LinkedHashMap> raw = xmlMapper.readValue(
-                    new File(PATH + "/" + fileName),
-                    new TypeReference<>() {
-            });
-
-            return convertToList(raw, clazz);
+            return xmlMapper.readValue(new File(PATH + fileName),
+                    xmlMapper.getTypeFactory().constructCollectionType(List.class, clazz));
         } catch (IOException e) {
             if (e.getMessage().contains("No content to map due to end-of-input")) {
                 return List.of();
             }
             throw e;
         }
-    }
-
-    private static <T> List<T> convertToList(List<LinkedHashMap> raw, Class<T> clazz) {
-        List<T> result = new ArrayList<>();
-        for (LinkedHashMap map : raw) {
-            T obj = objectMapper.convertValue(map, clazz);
-            result.add(obj);
-        }
-        return result;
     }
 }
