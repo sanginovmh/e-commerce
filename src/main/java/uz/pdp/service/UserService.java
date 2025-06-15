@@ -4,6 +4,7 @@ import uz.pdp.base.BaseService;
 import uz.pdp.exception.InvalidUsernameException;
 import uz.pdp.model.User;
 import uz.pdp.util.FileUtils;
+import uz.pdp.xmlwrapper.UserList;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class UserService implements BaseService<User> {
     @Override
     public void add(User user) throws IOException, InvalidUsernameException {
         users = readUsers();
-        if (isValid(user.getUsername())) {
+        if (isUsernameValid(user.getUsername())) {
             users.add(user);
             save();
         } else {
@@ -121,13 +122,27 @@ public class UserService implements BaseService<User> {
      * @param username the username to validate
      * @return true if the username is valid, false otherwise
      */
-    public boolean isValid(String username) {
+    private boolean isUsernameUsed(String username) {
         for (User user : users) {
-            if (username == null || username.isBlank() || user.getUsername().equals(username)) {
+            if (user.getUsername().equals(username)) {
                 return false;
             }
         }
         return true;
+    }
+
+    /**
+     * Validates a username based on specific criteria:
+     * - Must be at least 3 characters long
+     * - Can contain letters, digits, dots, underscores, and hyphens
+     * - Must not be blank
+     * - Must not already be used by another user
+     *
+     * @param username the username to validate
+     * @return true if the username is valid, false otherwise
+     */
+    public boolean isUsernameValid(String username) {
+        return username.matches("^[a-zA-Z0-9._-]{3,}$") && isUsernameUsed(username) && !username.isBlank();
     }
 
     /**
@@ -151,7 +166,8 @@ public class UserService implements BaseService<User> {
      * @throws IOException if an I/O error occurs
      */
     private void save() throws IOException {
-        FileUtils.writeToXml(FILE_NAME, users);
+        UserList userList = new UserList(users);
+        FileUtils.writeToXml(FILE_NAME, userList);
     }
 
     /**

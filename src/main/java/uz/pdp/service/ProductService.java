@@ -1,6 +1,5 @@
 package uz.pdp.service;
 
-import lombok.SneakyThrows;
 import uz.pdp.base.BaseService;
 import uz.pdp.exception.InvalidProductException;
 import uz.pdp.model.Category;
@@ -27,7 +26,7 @@ public class ProductService implements BaseService<Product> {
     @Override
     public void add(Product product) throws IOException, IllegalArgumentException {
         products = readProducts();
-        if (isValidProduct(product)) {
+        if (isProductValid(product)) {
             products.add(product);
             save();
         } else {
@@ -133,9 +132,9 @@ public class ProductService implements BaseService<Product> {
         return path;
     }
 
-    public boolean isValidProduct(Product product) {
+    public boolean isProductValid(Product product) {
         for (Product p : products) {
-            if (p.isActive() && p.getName().equals(product.getName())) {
+            if (p.isActive() && p.getName().equalsIgnoreCase(product.getName())) {
                 return false;
             }
         }
@@ -169,5 +168,10 @@ public class ProductService implements BaseService<Product> {
 
     private List<Product> readProducts() throws IOException {
         return FileUtils.readFromJson(FILE_NAME, Product.class);
+    }
+
+    public void clear() throws IOException {
+        products = new ArrayList<>();
+        save();
     }
 }

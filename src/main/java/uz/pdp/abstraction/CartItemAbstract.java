@@ -1,4 +1,4 @@
-package uz.pdp.abstracts;
+package uz.pdp.abstraction;
 
 import lombok.RequiredArgsConstructor;
 import uz.pdp.model.Cart;
