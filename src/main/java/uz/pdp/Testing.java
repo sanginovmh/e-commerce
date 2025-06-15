@@ -18,5 +18,7 @@ public class Testing {
 
         System.out.println(productService.getByName("Laptop"));
         System.out.println(userService.getByUsername("admin"));
+
+        String randomUsername = UUID.randomUUID().toString();
     }
 }
