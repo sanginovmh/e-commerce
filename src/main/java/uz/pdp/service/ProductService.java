@@ -27,15 +27,16 @@ public class ProductService implements BaseService<Product> {
     public void add(Product product) throws IOException, IllegalArgumentException {
         products = readProducts();
         if (isProductValid(product)) {
-            products.add(product);
+            Product found = getByName(product.getName());
+            if (found != null) {
+                product.setQuantity(product.getQuantity() + found.getQuantity());
+                update(found.getId(), product);
+            } else {
+                products.add(product);
+            }
             save();
         } else {
-            Product existingProduct = getByName(product.getName());
-            if (existingProduct == null) {
-                throw new InvalidProductException("Product with name " + product.getName() + "must have positive parameters.");
-            }
-            product.setQuantity(existingProduct.getQuantity() + product.getQuantity());
-            update(existingProduct.getId(), product);
+            throw new InvalidProductException("Invalid product parameters.");
         }
     }
 
@@ -52,17 +53,14 @@ public class ProductService implements BaseService<Product> {
     @Override
     public boolean update(UUID id, Product product) throws IOException {
         Product found = get(id);
-        if (found != null && found.isActive()) {
-            found.setName(product.getName());
-            found.setPrice(product.getPrice());
-            found.setQuantity(product.getQuantity());
-            found.setSellerId(product.getSellerId());
-            found.setCategoryId(product.getCategoryId());
+        found.setName(product.getName());
+        found.setPrice(product.getPrice());
+        found.setQuantity(product.getQuantity());
+        found.setSellerId(product.getSellerId());
+        found.setCategoryId(product.getCategoryId());
 
-            save();
-            return true;
-        }
-        return false;
+        save();
+        return true;
     }
 
     @Override
@@ -74,31 +72,26 @@ public class ProductService implements BaseService<Product> {
         }
     }
 
-    public List<Product> getByCategory(String categoryName, CategoryService categoryService) {
-        UUID categoryId = categoryService.getByName(categoryName).getId();
-        if (categoryService.isLast(categoryName)) {
-            List<Product> productList = new ArrayList<>();
-            for (Product product : products) {
-                if (product.isActive() && product.getCategoryId().equals(categoryId)) {
-                    productList.add(product);
-                }
+    public List<Product> getByCategoryId(UUID categoryId) {
+        List<Product> productList = new ArrayList<>();
+        for (Product product : products) {
+            if (product.isActive() && product.getCategoryId().equals(categoryId)) {
+                productList.add(product);
             }
-            return productList;
         }
-        return null;
+        return productList;
     }
 
     public Product getByName(String name) {
         for (Product product : products) {
-            if (product.getName().equals(name)) {
+            if (product.isActive() && product.getName().equalsIgnoreCase(name)) {
                 return product;
             }
         }
         return null;
     }
 
-    public List<Product> getBySeller(String username, UserService userService) {
-        UUID sellerId = userService.getByUsername(username).getId();
+    public List<Product> getBySeller(UUID sellerId) {
         List<Product> productList = new ArrayList<>();
         for (Product product : products) {
             if (product.isActive() && product.getSellerId().equals(sellerId)) {
@@ -133,15 +126,19 @@ public class ProductService implements BaseService<Product> {
     }
 
     public boolean isProductValid(Product product) {
+        return product.getPrice() > 0 && product.getQuantity() > 0;
+    }
+
+    public boolean isCategoryEmpty(UUID categoryId) {
         for (Product p : products) {
-            if (p.isActive() && p.getName().equalsIgnoreCase(product.getName())) {
+            if (p.isActive() && p.getCategoryId().equals(categoryId)) {
                 return false;
             }
         }
         return true;
     }
 
-    public void deleteProductsByCategory(UUID categoryId) throws IOException {
+    public void removeProductsByCategory(UUID categoryId) throws IOException {
         for (Product product : products) {
             if (product.isActive() && product.getCategoryId().equals(categoryId)) {
                 product.setActive(false);
@@ -173,5 +170,15 @@ public class ProductService implements BaseService<Product> {
     public void clear() throws IOException {
         products = new ArrayList<>();
         save();
+    }
+
+    public String toPrettyString(List<Product> list) {
+        StringBuilder sb = new StringBuilder();
+        for (Product product : list) {
+            sb.append(product.getName()).append(" - $")
+                    .append(product.getPrice()).append(" - quantity: ")
+                    .append(product.getQuantity()).append("\n");
+        }
+        return sb.toString();
     }
 }

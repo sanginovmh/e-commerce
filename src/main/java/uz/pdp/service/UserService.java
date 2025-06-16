@@ -99,6 +99,20 @@ public class UserService implements BaseService<User> {
         }
         return null;
     }
+    
+    /**
+     * Checks if a user with the given username exists.
+     *
+     * @param userId the username to check
+     * @return true if the user exists, false otherwise
+     */
+    public String getUsername(UUID userId) {
+        User user = get(userId);
+        if (user != null) {
+            return user.getUsername();
+        }
+        return "Unknown User";
+    } 
 
     /**
      * Retrieves a list of users with the specified role.
@@ -124,7 +138,7 @@ public class UserService implements BaseService<User> {
      */
     private boolean isUsernameUsed(String username) {
         for (User user : users) {
-            if (user.getUsername().equals(username)) {
+            if (user.isActive() && user.getUsername().equals(username)) {
                 return false;
             }
         }
@@ -188,5 +202,16 @@ public class UserService implements BaseService<User> {
     public void clear() throws IOException {
         users = new ArrayList<>();
         save();
+    }
+
+
+    public String toPrettyStringSuper() {
+        StringBuilder sb = new StringBuilder();
+        for (User u : getAll()) {
+            sb.append(u.getFullName() + ", "
+                    + u.getUsername() + ", "
+                    + u.getRole() + "\n");
+        }
+        return sb.toString();
     }
 }

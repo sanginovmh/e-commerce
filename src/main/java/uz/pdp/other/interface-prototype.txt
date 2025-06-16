@@ -1,0 +1,182 @@
+
+
+
+    # initial_page:
+
+1. Login -> login_page
+2. Register -> register_page
+
+
+
+    # login_page:
+
+Username: [__________]
+Password: [__________]
+
+if valid -> dashboard_page
+if invalid -> initial_page
+
+
+
+    # register_page:
+
+Full Name: [__________]
+Username: [__________]
+Password: [__________]
+Role (Customer/Seller): [__________]
+
+if valid -> dashboard_page
+if invalid -> initial_page
+
+
+
+    # dashboard_page:
+
+if role == Admin:
+    1. Manage Users -> manage_users_page
+    2. Manage Categories -> manage_categories_page
+    3. Manage Products -> manage_products_page
+    4. Manage Carts -> manage_carts_page
+
+    5. Browse Products -> browse_products_page
+    6. Create New Admin -> create_admin_page
+
+    7. Search Super -> search_super_page
+    8. Search Global -> search_page
+
+if role == Customer:
+    1. Browse Products -> browse_products_page
+    2. View Cart -> cart_page
+
+    3. Search Global -> search_page
+
+if role == Seller:
+    1. Browse Products -> browse_products_page
+    2. View Your Products -> seller_products_page
+    3. Add New Product -> add_product_page
+
+    4. Search Global -> search_page
+
+
+
+    # manage_users_page:
+
+view_users_page -> Remove User: [__________]
+
+
+
+    # manage_categories_page:
+
+1. View All Categories -> view_categories_page
+2. Add New Category -> add_category_page
+3. Remove Category -> remove_category_page
+
+
+
+    # manage_products_page:
+
+1. View All Products -> view_products_page
+2. Remove Product -> remove_product_page
+
+
+
+    # manage_carts_page:
+
+1. View All Carts -> view_carts_page
+2. Remove Cart -> remove_cart_page
+
+
+
+    # browse_products_page:
+
+-> view_categories_page  -> ...
+
+    Category 1
+    Category 2
+
+    Select Category (.) to go back: [__________]
+
+-> view_children_page
+
+    Product 1 - $10.00 - Quantity: 5
+    Product 2 - $15.00 - Quantity: 3
+
+    if role == Customer
+        -> Add Item (.) to go back: [__________]
+    if role == Seller:
+        -> Add New Product (.) to go back: [__________]
+
+
+    # create_admin_page:
+
+Full Name: [__________]
+Username: [__________]
+Password: [__________]
+Are you sure? (yes/no): [__________]
+
+
+
+    # search_super_page:
+
+Search Super: [__________]
+
+-> view_super_results_page
+
+    Super Result 1
+    Super Result 2
+
+    Select Result (.) to go back: [__________]
+
+    -> view_object_options_page
+
+
+
+    # search_page:
+
+Search Global: [__________]
+
+-> view_global_results_page
+
+    Global Result 1
+    Global Result 2
+
+    Select Result (.) to go back: [__________]
+
+    -> view_object_options_page
+
+
+
+    # cart_page:
+
+    Cart Item 1 - $10.00 - Quantity: 2
+    Cart Item 2 - $15.00 - Quantity: 1
+    Total: $25.00
+
+    1. Checkout -> checkout_page
+    2. Change Quantity -> change_quantity_page -> Select: [__________]
+                                                  New Quantity: [__________]
+    3. Remove Item -> remove_item_page -> Select: [__________]
+
+
+
+    # seller_products_page:
+
+    Seller Product 1 - $20.00 - Quantity: 10
+    Seller Product 2 - $25.00 - Quantity: 5
+
+    1. Edit Product -> Select: [__________]
+                       New Name: [__________]
+                       New Price: [__________]
+                       New Quantity: [__________]
+    2. Remove Product -> Select: [__________]
+
+
+
+    # add_product_page:
+
+    view_categories_page -> ...
+
+    -> Product Name: [__________]
+       Product Price: [__________]
+       Product Quantity: [__________]
+

@@ -5,6 +5,8 @@ import uz.pdp.base.BaseService;
 import uz.pdp.exception.InvalidCartException;
 import uz.pdp.model.Cart;
 import uz.pdp.model.Product;
+import uz.pdp.model.User;
+import uz.pdp.util.CartUtils;
 import uz.pdp.util.FileUtils;
 
 import java.io.IOException;
@@ -68,15 +70,14 @@ public class CartService implements BaseService<Cart> {
         }
     }
 
-    public void buyCart(UUID customerId, ProductService productService) throws InvalidCartException, IOException {
-        Cart cart = getByCustomerId(customerId);
+    public void checkout(Cart cart, ProductService productService) throws InvalidCartException, IOException {
         if (isValidCart(cart)) {
             CartItemAbstract cartItemAbstract = new CartItemAbstract(cart);
             cartItemAbstract.buyItemsInCart(productService);
             remove(cart.getId());
             save();
         } else {
-            throw new InvalidCartException("Cart not found or invalid for customer: " + customerId);
+            throw new InvalidCartException("Cart is invalid or already paid.");
         }
     }
 
@@ -90,6 +91,16 @@ public class CartService implements BaseService<Cart> {
             }
         }
         return true;
+    }
+
+    public List<Cart> getAll() {
+        List<Cart> cartList = new ArrayList<>();
+        for (Cart cart : carts) {
+            if (cart.isActive()) {
+                cartList.add(cart);
+            }
+        }
+        return cartList;
     }
 
     public void evaluatePrice(UUID customerId, ProductService productService)
@@ -144,15 +155,15 @@ public class CartService implements BaseService<Cart> {
         save();
     }
 
-    public void removeItemFromCart(UUID customerId, Product product) throws InvalidCartException, IOException {
-        Cart cart = getByCustomerId(customerId);
-        if (cart == null) {
-            throw new InvalidCartException("Cart not found for customer: " + customerId);
-        }
-
+    public void removeItemFromCart(Cart cart, Product product) throws InvalidCartException, IOException {
         CartItemAbstract cartItemAbstract = new CartItemAbstract(cart);
         cartItemAbstract.removeItemFromCart(product);
         save();
+    }
+
+    public void removeByCustomerId(UUID customerId) throws IOException {
+        Cart cart = getByCustomerId(customerId);
+        remove(cart.getId());
     }
 
     private void save() throws IOException {
@@ -166,5 +177,23 @@ public class CartService implements BaseService<Cart> {
     public void clear() throws IOException {
         carts = new ArrayList<>();
         save();
+    }
+
+    public String toPrettyString(List<Cart> carts, UserService userService) {
+        StringBuilder sb = new StringBuilder();
+        for (Cart c : carts) {
+            if (c.isActive()) {
+                User customer = userService.get(c.getCustomerId());
+                sb.append(customer.getUsername()).append(", ")
+                        .append(CartUtils.toPrettyStringItems(c)).append(", ");
+                try {
+                    sb.append("Total: $").append(CartUtils.calculatePrice(c));
+                } catch (InvalidCartException | IOException e) {
+                    sb.append("Error calculating price: ").append(e.getMessage());
+                }
+                sb.append("\n");
+            }
+        }
+        return sb.toString();
     }
 }

@@ -1,1 +1,10 @@
-<users/>
+<users>
+  <user>
+    <id>9339308f-e571-481e-a593-1e9baf75bb4a</id>
+    <active>true</active>
+    <fullName>Boss</fullName>
+    <username>admin</username>
+    <password>admin</password>
+    <role>ADMIN</role>
+  </user>
+</users>

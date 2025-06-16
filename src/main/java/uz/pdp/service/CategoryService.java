@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 public class CategoryService implements BaseService<Category> {
+    public static final UUID ROOT_UUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
     private static final String FILE_NAME = "categories.xml";
     List<Category> categories;
 
@@ -61,25 +62,26 @@ public class CategoryService implements BaseService<Category> {
         for (Category category : categories) {
             if (category.isActive() && category.getId().equals(id)) {
                 category.setActive(false);
-                removeChildCategories(category.getId());
+                killChildren(category.getId());
 
                 save();
             }
         }
     }
 
-    public void removeChildCategories(UUID categoryId) throws IOException {
-        if (categoryId == null) return;
-        ArrayList<Category> children = new ArrayList<>();
-        for (Category category : categories) {
-            if (category.isActive() && category.getParentId().equals(categoryId)) {
-                children.add(category);
-            }
+    public void killChildren(UUID categoryId) throws IOException {
+        Category category = get(categoryId);
+        if (category == null) {
+            return;
         }
-        if (children.isEmpty()) return;
-        for (Category category : children) {
-            category.setActive(false);
-            removeChildCategories(category.getId());
+        ArrayList<Category> children =
+                (ArrayList<Category>) getChildren(category.getName());
+        if (children.isEmpty()) {
+            return;
+        }
+        for (Category child : children) {
+            child.setActive(false);
+            killChildren(child.getId());
         }
         save();
     }
@@ -102,14 +104,9 @@ public class CategoryService implements BaseService<Category> {
         return null;
     }
 
-    public boolean isLast(String name) {
-        Category category = getByName(name);
-        return isLast(category.getId());
-    }
-
     public boolean isLast(UUID categoryId) {
-        for (Category category : categories) {
-            if (category.isActive() && category.getParentId().equals(categoryId)) {
+        for (Category c : categories) {
+            if (c.isActive() && c.getParentId().equals(categoryId)) {
                 return false;
             }
         }
@@ -126,6 +123,45 @@ public class CategoryService implements BaseService<Category> {
         return activeCategories;
     }
 
+    public List<Category> getChildren(String name) {
+        List<Category> children = new ArrayList<>();
+        UUID categoryId;
+        if (name.equals("Root")) {
+            categoryId = ROOT_UUID;
+        } else {
+            Category category = getByName(name);
+            if (category == null) {
+                return children;
+            }
+            categoryId = category.getId();
+        }
+        for (Category child : categories) {
+            if (child.isActive() && child.getParentId().equals(categoryId)) {
+                children.add(child);
+            }
+        }
+        return children;
+    }
+
+    public List<Category> getChildren(UUID categoryId) {
+        List<Category> children = new ArrayList<>();
+        for (Category child : categories) {
+            if (child.isActive() && child.getParentId().equals(categoryId)) {
+                children.add(child);
+            }
+        }
+        return children;
+    }
+
+    public List<Category> getUncles(UUID categoryId) {
+        Category category = get(categoryId);
+        Category parent = get(category.getParentId());
+        if (parent != null) {
+            return getChildren(parent.getId());
+        }
+        return null;
+    }
+
     private void save() throws IOException {
         CategoryList categoryList = new CategoryList(categories);
         FileUtils.writeToXml(FILE_NAME, categoryList);
@@ -138,6 +174,14 @@ public class CategoryService implements BaseService<Category> {
     public void clear() throws IOException {
         categories.clear();
         save();
+    }
+
+    public String toPrettyString(List<Category> list) {
+        StringBuilder sb = new StringBuilder();
+        for (Category c : list) {
+            sb.append(c.getName()).append("\n");
+        }
+        return sb.toString();
     }
 }
 

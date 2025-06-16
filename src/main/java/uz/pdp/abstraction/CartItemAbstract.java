@@ -102,7 +102,7 @@ public class CartItemAbstract {
      * @return true if the product is in the cart, false otherwise.
      */
     private boolean isQuantityValid(Product p, int q) {
-        return q > 0 && p.getQuantity() > q;
+        return q > 0 && p.getQuantity() >= q;
     }
 
     /**

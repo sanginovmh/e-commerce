@@ -5,11 +5,11 @@ public class InvalidProductException extends RuntimeException {
         super(message);
     }
 
-    public InvalidProductException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public InvalidProductException(Throwable cause) {
-        super(cause);
-    }
+//    public InvalidProductException(String message, Throwable cause) {
+//        super(message, cause);
+//    }
+//
+//    public InvalidProductException(Throwable cause) {
+//        super(cause);
+//    }
 }
