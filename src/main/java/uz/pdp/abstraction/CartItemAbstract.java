@@ -6,6 +6,7 @@ import uz.pdp.model.Product;
 import uz.pdp.service.ProductService;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 public class CartItemAbstract {
@@ -19,8 +20,10 @@ public class CartItemAbstract {
      * @throws IllegalArgumentException if the quantity is invalid or the product is already in the cart.
      */
     public void addItemToCart(Product product, int quantity) throws IllegalArgumentException {
-        if (hasProductInCart(product)) {
-            updateItemInCart(product, quantity);
+        Cart.Item found = getItemInCart(product.getId());
+        if (found != null) {
+            int oldQuantity = found.getQuantity();
+            updateItemInCart(product, quantity + oldQuantity);
             return;
         }
         if (isQuantityValid(product, quantity)) {
@@ -105,13 +108,12 @@ public class CartItemAbstract {
         return q > 0 && p.getQuantity() >= q;
     }
 
-    /**
-     * Checks if the cart already contains a product.
-     *
-     * @param p The product to check.
-     * @return true if the product is already in the cart, false otherwise.
-     */
-    private boolean hasProductInCart(Product p) {
-        return cart.getItems().stream().anyMatch(item -> item.getProductId().equals(p.getId()));
+    private Cart.Item getItemInCart(UUID productId) {
+        for (Cart.Item item : cart.getItems()) {
+            if (item.getProductId().equals(productId)) {
+                return item;
+            }
+        }
+        return null;
     }
 }

@@ -1,1 +1,17 @@
-[  ]
+[ {
+  "id" : "3248b64a-09d1-446d-be11-81785efe14eb",
+  "active" : true,
+  "name" : "Subaru",
+  "price" : 20000.0,
+  "quantity" : 13,
+  "categoryId" : "dbf9419d-8d9f-4798-bac4-f4dacc150a8c",
+  "sellerId" : "a234cb4f-6333-4fb0-8e58-1c2cb669080e"
+}, {
+  "id" : "15de6c42-c326-4018-9c6c-ca990870c6e5",
+  "active" : true,
+  "name" : "Toyota",
+  "price" : 12000.0,
+  "quantity" : 12,
+  "categoryId" : "dbf9419d-8d9f-4798-bac4-f4dacc150a8c",
+  "sellerId" : "a234cb4f-6333-4fb0-8e58-1c2cb669080e"
+} ]

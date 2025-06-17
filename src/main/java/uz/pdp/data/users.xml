@@ -10,9 +10,17 @@
   <user>
     <id>85702ea9-6dde-4b0c-8eb9-72c405bf28ac</id>
     <active>true</active>
-    <fullName>aaa</fullName>
-    <username>aaa</username>
-    <password>aaa</password>
+    <fullName>u</fullName>
+    <username>u</username>
+    <password>u</password>
     <role>CUSTOMER</role>
+  </user>
+  <user>
+    <id>a234cb4f-6333-4fb0-8e58-1c2cb669080e</id>
+    <active>true</active>
+    <fullName>s</fullName>
+    <username>s</username>
+    <password>s</password>
+    <role>SELLER</role>
   </user>
 </users>

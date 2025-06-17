@@ -3,6 +3,7 @@ package uz.pdp.service;
 import uz.pdp.abstraction.CartItemAbstract;
 import uz.pdp.base.BaseService;
 import uz.pdp.exception.InvalidCartException;
+import uz.pdp.exception.InvalidCartItemException;
 import uz.pdp.model.Cart;
 import uz.pdp.model.Product;
 import uz.pdp.model.User;
@@ -70,23 +71,27 @@ public class CartService implements BaseService<Cart> {
         }
     }
 
-    public void checkout(Cart cart, ProductService productService) throws InvalidCartException, IOException {
-        if (isValidCart(cart)) {
+    public void checkout(Cart cart, ProductService productService) throws IOException,
+            InvalidCartItemException {
+        if (isValidCart(cart, productService)) {
             CartItemAbstract cartItemAbstract = new CartItemAbstract(cart);
             cartItemAbstract.buyItemsInCart(productService);
             remove(cart.getId());
             save();
         } else {
-            throw new InvalidCartException("Cart is invalid or already paid.");
+            throw new InvalidCartItemException("Product is out of stock or quantity is invalid.\nItem removed from cart.");
         }
     }
 
-    private boolean isValidCart(Cart cart) {
+    private boolean isValidCart(Cart cart, ProductService productService) {
         if (cart == null || cart.isPaid() || cart.getItems() == null || cart.getItems().isEmpty()) {
             return false;
         }
         for (Cart.Item item : cart.getItems()) {
-            if (item.getQuantity() <= 0) {
+            Product product = productService.get(item.getProductId());
+            if (product != null && item.getQuantity() <= product.getQuantity()) {
+                CartItemAbstract cartItemAbstract = new CartItemAbstract(cart);
+                cartItemAbstract.removeItemFromCart(product);
                 return false;
             }
         }

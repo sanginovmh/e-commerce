@@ -24,9 +24,9 @@ public class CartUtils {
         }
         for (Cart.Item item : items) {
             Product product = productService.get(item.getProductId());
-            sb.append(product.getName()).append(", ")
-                    .append("$").append(product.getPrice()).append(", ")
-                    .append(item.getQuantity()).append("pcs. \n");
+            sb.append(product.getName()).append(" - ")
+                    .append("$").append(product.getPrice()).append(" - ")
+                    .append(item.getQuantity()).append(" pcs. \n");
         }
         return sb.toString();
     }

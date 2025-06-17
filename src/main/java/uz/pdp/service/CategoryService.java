@@ -153,13 +153,14 @@ public class CategoryService implements BaseService<Category> {
         return children;
     }
 
-    public List<Category> getUncles(UUID categoryId) {
-        Category category = get(categoryId);
-        Category parent = get(category.getParentId());
-        if (parent != null) {
-            return getChildren(parent.getId());
+    public List<Category> getLastCategories() {
+        List<Category> lastCategories = new ArrayList<>();
+        for (Category category : categories) {
+            if (category.isActive() && isLast(category.getId())) {
+                lastCategories.add(category);
+            }
         }
-        return null;
+        return lastCategories;
     }
 
     private void save() throws IOException {

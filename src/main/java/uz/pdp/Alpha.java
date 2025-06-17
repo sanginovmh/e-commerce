@@ -250,11 +250,13 @@ public class Alpha {
                 categoryId = categoryService.getByName(up).getId();
             }
             level = categoryService.getChildren(categoryId);
-
             System.out.println("\n- " + up + " -");
-            String prettyString = categoryService.toPrettyString(level);
-            System.out.println(prettyString);
-            System.out.print("Go to: ");
+            if (!level.isEmpty()) {
+                System.out.println(categoryService.toPrettyString(level));
+            } else {
+                System.out.println("[no categories found]");
+            }
+            System.out.print("Go to ('.' to go back): ");
             String goTo = strScanner.nextLine().trim();
 
             if (!goTo.equals(".")) {
@@ -314,19 +316,19 @@ public class Alpha {
                 1. Add to Cart
                 
                 2. Back to Categories
+                3. Back to Dashboard
                 
                 input %\s""");
         switch (strScanner.nextLine()) {
             case "1" -> addToCartPage(product);
-            case "2" -> {
-            }
+            case "3" -> dashboardPage();
         }
     }
 
     public static void addToCartPage(Product product) {
         System.out.println("\n--- Add to Cart ---");
         System.out.print("Enter quantity: ");
-        Integer quantity = numScanner.nextInt();
+        int quantity = numScanner.nextInt();
         UUID userId = currentUser.getId();
 
         Cart cart = cartService.getByCustomerId(userId);
@@ -351,6 +353,7 @@ public class Alpha {
         System.out.println("\n--- Add New Category ---");
         System.out.print("Category Name: ");
         String name = strScanner.nextLine();
+
         if (name.trim().equalsIgnoreCase("Root")) {
             System.out.println("Category name cannot be 'root'.");
             return;
@@ -554,7 +557,7 @@ public class Alpha {
             return;
         }
         System.out.print("Enter Product Quantity: ");
-        int quantity = numScanner.nextInt();
+        int quantity;
         try {
             quantity = numScanner.nextInt();
         } catch (InputMismatchException e) {
@@ -562,6 +565,11 @@ public class Alpha {
             numScanner.nextLine();
             return;
         }
+
+        System.out.println("\n- Available Categories -");
+        List<Category> categories = categoryService.getLastCategories();
+        System.out.println(categoryService.toPrettyString(categories));
+
         System.out.print("Category Name: ");
         String categoryName = strScanner.nextLine();
 
@@ -593,7 +601,7 @@ public class Alpha {
         } else {
             System.out.println(cartService.toPrettyString(List.of(cart), userService));
         }
-        System.out.println("""
+        System.out.print("""
                 1. Checkout
                 2. Remove Item
                 
