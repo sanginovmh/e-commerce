@@ -1,17 +1,89 @@
 [ {
-  "id" : "3248b64a-09d1-446d-be11-81785efe14eb",
+  "id" : "fc6d3a82-ef8f-4f8d-beba-eed3c4b50d6c",
   "active" : true,
-  "name" : "Subaru",
-  "price" : 20000.0,
-  "quantity" : 13,
-  "categoryId" : "dbf9419d-8d9f-4798-bac4-f4dacc150a8c",
-  "sellerId" : "a234cb4f-6333-4fb0-8e58-1c2cb669080e"
+  "name" : "iPhone 16",
+  "price" : 1000.0,
+  "quantity" : 14,
+  "categoryId" : "e3daa2b8-d3ed-411d-9c8f-306586433b9b",
+  "sellerId" : "52c24309-5fa6-43d7-8733-98d7ba2ab056"
 }, {
-  "id" : "15de6c42-c326-4018-9c6c-ca990870c6e5",
+  "id" : "8799d582-17d7-4da8-96ff-1a7884300558",
   "active" : true,
-  "name" : "Toyota",
-  "price" : 12000.0,
-  "quantity" : 12,
-  "categoryId" : "dbf9419d-8d9f-4798-bac4-f4dacc150a8c",
-  "sellerId" : "a234cb4f-6333-4fb0-8e58-1c2cb669080e"
+  "name" : "Samsung s4",
+  "price" : 350.0,
+  "quantity" : 9,
+  "categoryId" : "e3daa2b8-d3ed-411d-9c8f-306586433b9b",
+  "sellerId" : "52c24309-5fa6-43d7-8733-98d7ba2ab056"
+}, {
+  "id" : "5d7d22c3-9b39-4440-8b03-2ff02d374b97",
+  "active" : true,
+  "name" : "Nokia 3",
+  "price" : 100.0,
+  "quantity" : 19,
+  "categoryId" : "e3daa2b8-d3ed-411d-9c8f-306586433b9b",
+  "sellerId" : "52c24309-5fa6-43d7-8733-98d7ba2ab056"
+}, {
+  "id" : "440cbb63-f740-482d-9d71-638c261384b7",
+  "active" : true,
+  "name" : "Canon 15p",
+  "price" : 1200.0,
+  "quantity" : 4,
+  "categoryId" : "38aa2866-3cf2-4185-8269-1b7efbf2810b",
+  "sellerId" : "52c24309-5fa6-43d7-8733-98d7ba2ab056"
+}, {
+  "id" : "d9c708d9-66df-483a-87aa-8d011d14a821",
+  "active" : true,
+  "name" : "Epson A3",
+  "price" : 990.0,
+  "quantity" : 46,
+  "categoryId" : "38aa2866-3cf2-4185-8269-1b7efbf2810b",
+  "sellerId" : "52c24309-5fa6-43d7-8733-98d7ba2ab056"
+}, {
+  "id" : "18074e82-7369-41e8-be50-8ce359a15472",
+  "active" : true,
+  "name" : "Acer LW",
+  "price" : 560.0,
+  "quantity" : 2,
+  "categoryId" : "de446ef3-b574-4f43-bc35-86735d02ad0c",
+  "sellerId" : "52c24309-5fa6-43d7-8733-98d7ba2ab056"
+}, {
+  "id" : "9571eadb-942e-4e59-a2a2-2eb66ba3358b",
+  "active" : true,
+  "name" : "HP 11",
+  "price" : 499.0,
+  "quantity" : 7,
+  "categoryId" : "de446ef3-b574-4f43-bc35-86735d02ad0c",
+  "sellerId" : "52c24309-5fa6-43d7-8733-98d7ba2ab056"
+}, {
+  "id" : "677b44d0-bb5d-4ed7-9f5c-678402eca5f9",
+  "active" : false,
+  "name" : "MacBook pro M4",
+  "price" : 1990.0,
+  "quantity" : 0,
+  "categoryId" : "aaf49198-6030-4a89-ab5c-7fbe8d99016d",
+  "sellerId" : "52c24309-5fa6-43d7-8733-98d7ba2ab056"
+}, {
+  "id" : "cfc3de71-ac26-45f3-a540-6c078f2f7288",
+  "active" : true,
+  "name" : "Big mac",
+  "price" : 5.5,
+  "quantity" : 233,
+  "categoryId" : "66bdf4b6-bd78-4ee4-942e-9db48e2f2a33",
+  "sellerId" : "52c24309-5fa6-43d7-8733-98d7ba2ab056"
+}, {
+  "id" : "bca87210-c365-43ec-b075-032cbe991a7f",
+  "active" : true,
+  "name" : "Evos Shaurma",
+  "price" : 2.7,
+  "quantity" : 694,
+  "categoryId" : "66bdf4b6-bd78-4ee4-942e-9db48e2f2a33",
+  "sellerId" : "52c24309-5fa6-43d7-8733-98d7ba2ab056"
+}, {
+  "id" : "be03040b-0899-465e-862d-7b8f459b9a14",
+  "active" : true,
+  "name" : "Wendy's",
+  "price" : 4.1,
+  "quantity" : 211,
+  "categoryId" : "66bdf4b6-bd78-4ee4-942e-9db48e2f2a33",
+  "sellerId" : "52c24309-5fa6-43d7-8733-98d7ba2ab056"
 } ]

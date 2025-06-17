@@ -47,6 +47,7 @@ public class Alpha {
             case "3" -> System.exit(0);
             default -> {
                 System.out.println("Invalid input, try again!");
+                waitClick();
                 initialPage();
             }
         }
@@ -62,8 +63,10 @@ public class Alpha {
         currentUser = userService.login(username, password);
         if (currentUser != null) {
             System.out.println("Login successful!");
+            waitClick();
         } else {
             System.out.println("Invalid credentials, try again!");
+            waitClick();
             initialPage();
             return;
         }
@@ -88,6 +91,7 @@ public class Alpha {
             case "S" -> role = User.UserRole.SELLER;
             default -> {
                 System.out.println("Invalid role, try again!");
+                waitClick();
                 registerPage();
                 return;
             }
@@ -98,8 +102,10 @@ public class Alpha {
             userService.add(newUser);
             currentUser = newUser;
             System.out.println("Registration successful!");
+            waitClick();
         } catch (Exception e) {
             System.out.println("Registration failed: " + e.getMessage());
+            waitClick();
             registerPage();
             return;
         }
@@ -140,6 +146,7 @@ public class Alpha {
                 case "10" -> System.exit(0);
                 default -> {
                     System.out.println("Invalid input, try again!");
+                    waitClick();
                     dashboardPage();
                 }
             }
@@ -181,6 +188,7 @@ public class Alpha {
             }
         } else {
             System.out.println("Unknown role, logging out!");
+            waitClick();
             logout();
         }
     }
@@ -195,17 +203,21 @@ public class Alpha {
         if (user != null) {
             if (user.getRole().equals(User.UserRole.ADMIN)) {
                 System.out.println("Cannot remove an admin user!");
+                waitClick();
                 dashboardPage();
                 return;
             }
             try {
                 userService.remove(user.getId());
                 System.out.println("User removed successfully!");
+                waitClick();
             } catch (Exception e) {
                 System.out.println("Failed to remove user: " + e.getMessage());
+                waitClick();
             }
         } else {
             System.out.println("User not found!");
+            waitClick();
         }
     }
 
@@ -224,6 +236,7 @@ public class Alpha {
             case "4" -> removeCategoryPage();
             default -> {
                 System.out.println("Invalid input, try again!");
+                waitClick();
                 manageCategoriesPage();
             }
         }
@@ -234,9 +247,11 @@ public class Alpha {
         List<Category> categories = categoryService.getAll();
         if (categories.isEmpty()) {
             System.out.println("No categories available.");
+            waitClick();
         } else {
             System.out.println(categoryService.toPrettyString(categories));
         }
+        waitClick();
     }
 
     public static void browseCategories() {
@@ -255,6 +270,7 @@ public class Alpha {
                 System.out.println(categoryService.toPrettyString(level));
             } else {
                 System.out.println("[no categories found]");
+                waitClick();
             }
             System.out.print("Go to ('.' to go back): ");
             String goTo = strScanner.nextLine().trim();
@@ -273,12 +289,14 @@ public class Alpha {
                             }
                         } else {
                             System.out.println("[no products found]");
+                            waitClick();
                         }
                     } else {
                         up = goTo;
                     }
                 } else {
                     System.out.println("Category not found.");
+                    waitClick();
                 }
             } else {
                 if (!categoryId.equals(CategoryService.ROOT_UUID)) {
@@ -309,6 +327,7 @@ public class Alpha {
         System.out.println("\n--- Product Menu ---");
         if (product == null) {
             System.out.println("Product not found!");
+            waitClick();
             return;
         }
         System.out.println(productService.toPrettyString(List.of(product)));
@@ -337,15 +356,19 @@ public class Alpha {
             try {
                 cartService.add(cart);
                 System.out.println("New cart created!");
+                waitClick();
             } catch (Exception e) {
                 System.out.println("Unable to create cart: " + e.getMessage());
+                waitClick();
             }
         }
         try {
             cartService.addItemToCart(userId, product, quantity);
             System.out.println("Item added to cart!");
+            waitClick();
         } catch (Exception e) {
             System.out.println("Unable to add product to cart: " + e.getMessage());
+            waitClick();
         }
     }
 
@@ -354,8 +377,11 @@ public class Alpha {
         System.out.print("Category Name: ");
         String name = strScanner.nextLine();
 
+        printLastCategories();
+
         if (name.trim().equalsIgnoreCase("Root")) {
             System.out.println("Category name cannot be 'root'.");
+            waitClick();
             return;
         }
         System.out.print("Parent Category (or 'Root'): ");
@@ -366,11 +392,13 @@ public class Alpha {
             if (parentCategory != null) {
                 if (!productService.isCategoryEmpty(parentId)) {
                     System.out.println("Parent category must be empty of products.");
+                    waitClick();
                     return;
                 }
                 parentId = parentCategory.getId();
             } else {
                 System.out.println("Parent category not found.");
+                waitClick();
                 return;
             }
         }
@@ -378,8 +406,10 @@ public class Alpha {
         try {
             categoryService.add(newCategory);
             System.out.println("Category added successfully!");
+            waitClick();
         } catch (Exception e) {
             System.out.println("Failed to add category: " + e.getMessage());
+            waitClick();
         }
     }
 
@@ -392,12 +422,15 @@ public class Alpha {
             try {
                 categoryService.remove(category.getId());
                 System.out.println("Category removed successfully!");
+                waitClick();
             } catch (Exception e) {
                 System.out.println("Failed to remove category: " +
                         e.getMessage());
+                waitClick();
             }
         } else {
             System.out.println("Category not found!");
+            waitClick();
         }
     }
 
@@ -410,7 +443,10 @@ public class Alpha {
         switch (strScanner.nextLine()) {
             case "1" -> displayAllProducts();
             case "2" -> removeProductPage();
-            default -> System.out.println("Invalid input, try again!");
+            default -> {
+                System.out.println("Invalid input, try again!");
+                waitClick();
+            }
         }
     }
 
@@ -419,9 +455,11 @@ public class Alpha {
         List<Product> products = productService.getAll();
         if (products.isEmpty()) {
             System.out.println("No products available.");
+            waitClick();
         } else {
             System.out.println(productService.toPrettyString(products));
         }
+        waitClick();
     }
 
     public static void removeProductPage() {
@@ -433,11 +471,14 @@ public class Alpha {
             try {
                 productService.remove(product.getId());
                 System.out.println("Product removed successfully!");
+                waitClick();
             } catch (Exception e) {
                 System.out.println("Failed to remove product: " + e.getMessage());
+                waitClick();
             }
         } else {
             System.out.println("Product not found!");
+            waitClick();
         }
     }
 
@@ -452,6 +493,7 @@ public class Alpha {
             case "2" -> removeCartPage();
             default -> {
                 System.out.println("Invalid input, try again!");
+                waitClick();
                 manageCartsPage();
             }
         }
@@ -462,9 +504,11 @@ public class Alpha {
         List<Cart> carts = cartService.getAll();
         if (carts.isEmpty()) {
             System.out.println("No carts available.");
+            waitClick();
         } else {
             System.out.println(cartService.toPrettyString(carts, userService));
         }
+        waitClick();
     }
 
     public static void removeCartPage() {
@@ -476,11 +520,14 @@ public class Alpha {
             try {
                 cartService.removeByCustomerId(user.getId());
                 System.out.println("Cart removed successfully!");
+                waitClick();
             } catch (Exception e) {
                 System.out.println("Failed to remove cart: " + e.getMessage());
+                waitClick();
             }
         } else {
             System.out.println("User not found!");
+            waitClick();
         }
     }
 
@@ -497,8 +544,10 @@ public class Alpha {
         try {
             userService.add(newAdmin);
             System.out.println("New admin created successfully!");
+            waitClick();
         } catch (Exception e) {
             System.out.println("Failed to create admin: " + e.getMessage());
+            waitClick();
         }
     }
 
@@ -511,7 +560,7 @@ public class Alpha {
 
     public static void searchGlobalPage() {
         System.out.println("\n--- Search Global ---");
-        System.out.print("Enter search term: ");
+        System.out.print("Enter search term: fd");
         String searchTerm = strScanner.nextLine();
         // TODO implement global search functionality
     }
@@ -521,9 +570,11 @@ public class Alpha {
         List<Product> products = productService.getBySeller(currentUser.getId());
         if (products.isEmpty()) {
             System.out.println("You have no products listed.");
+            waitClick();
         } else {
             System.out.println(productService.toPrettyString(products));
         }
+        waitClick();
     }
 
     public static void removeSellerProductPage() {
@@ -535,11 +586,14 @@ public class Alpha {
             try {
                 productService.remove(product.getId());
                 System.out.println("Product removed successfully!");
+                waitClick();
             } catch (Exception e) {
                 System.out.println("Failed to remove product: " + e.getMessage());
+                waitClick();
             }
         } else {
             System.out.println("Product not found or you are not the seller!");
+            waitClick();
         }
     }
 
@@ -553,6 +607,7 @@ public class Alpha {
             price = numScanner.nextDouble();
         } catch (InputMismatchException e) {
             System.out.println("Price must be a number.");
+            waitClick();
             numScanner.nextLine();
             return;
         }
@@ -562,13 +617,12 @@ public class Alpha {
             quantity = numScanner.nextInt();
         } catch (InputMismatchException e) {
             System.out.println("Quantity must be a number.");
+            waitClick();
             numScanner.nextLine();
             return;
         }
 
-        System.out.println("\n- Available Categories -");
-        List<Category> categories = categoryService.getLastCategories();
-        System.out.println(categoryService.toPrettyString(categories));
+        printLastCategories();
 
         System.out.print("Category Name: ");
         String categoryName = strScanner.nextLine();
@@ -581,14 +635,18 @@ public class Alpha {
                 try {
                     productService.add(product);
                     System.out.println("Product added successfully!");
+                    waitClick();
                 } catch (Exception e) {
                     System.out.println("Failed to add product: " + e.getMessage());
+                    waitClick();
                 }
             } else {
                 System.out.println("Category contains subcategories.");
+                waitClick();
             }
         } else {
             System.out.println("Category not found.");
+            waitClick();
         }
     }
 
@@ -597,6 +655,7 @@ public class Alpha {
         Cart cart = cartService.getByCustomerId(currentUser.getId());
         if (cart == null || cart.getItems().isEmpty()) {
             System.out.println("Your cart is empty.");
+            waitClick();
             return;
         } else {
             System.out.println(cartService.toPrettyString(List.of(cart), userService));
@@ -619,13 +678,16 @@ public class Alpha {
         System.out.println("\n--- Checkout Cart ---");
         if (cart == null || cart.getItems().isEmpty()) {
             System.out.println("Your cart is empty, cannot checkout.");
+            waitClick();
             return;
         }
         try {
             cartService.checkout(cart, productService);
             System.out.println("Checkout successful! Thank you for your purchase.");
+            waitClick();
         } catch (Exception e) {
             System.out.println("Checkout failed: " + e.getMessage());
+            waitClick();
         }
     }
 
@@ -633,6 +695,7 @@ public class Alpha {
         System.out.println("\n--- Remove Item from Cart ---");
         if (cart == null || cart.getItems().isEmpty()) {
             System.out.println("Your cart is empty.");
+            waitClick();
             return;
         }
         System.out.print("Enter product name to remove: ");
@@ -640,19 +703,33 @@ public class Alpha {
         Product product = productService.getByName(productName);
         if (product == null) {
             System.out.println("Product not found in your cart.");
+            waitClick();
             return;
         }
         try {
             cartService.removeItemFromCart(cart, product);
             System.out.println("Item removed successfully!");
+            waitClick();
         } catch (Exception e) {
             System.out.println("Failed to remove item: " + e.getMessage());
+            waitClick();
         }
+    }
+
+    public static void printLastCategories() {
+        System.out.println("\n- Available Categories -");
+        List<Category> categories = categoryService.getLastCategories();
+        System.out.println(categoryService.toPrettyString(categories));
+    }
+
+    public static void waitClick() {
+        strScanner.nextLine();
     }
 
     public static void logout() {
         currentUser = null;
         System.out.println("Logged out successfully!");
+        waitClick();
         initialPage();
     }
 }

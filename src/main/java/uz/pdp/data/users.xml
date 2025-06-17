@@ -8,19 +8,19 @@
     <role>ADMIN</role>
   </user>
   <user>
-    <id>85702ea9-6dde-4b0c-8eb9-72c405bf28ac</id>
+    <id>6bd7bc1c-9478-43e3-ab60-3b0b7f5c22fe</id>
     <active>true</active>
-    <fullName>u</fullName>
-    <username>u</username>
-    <password>u</password>
+    <fullName>Userjon Userjonov</fullName>
+    <username>user</username>
+    <password>user</password>
     <role>CUSTOMER</role>
   </user>
   <user>
-    <id>a234cb4f-6333-4fb0-8e58-1c2cb669080e</id>
+    <id>52c24309-5fa6-43d7-8733-98d7ba2ab056</id>
     <active>true</active>
-    <fullName>s</fullName>
-    <username>s</username>
-    <password>s</password>
+    <fullName>Seller Sellerov</fullName>
+    <username>seller</username>
+    <password>seller</password>
     <role>SELLER</role>
   </user>
 </users>
