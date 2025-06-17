@@ -9,6 +9,7 @@ import uz.pdp.service.CategoryService;
 import uz.pdp.service.ProductService;
 import uz.pdp.service.UserService;
 
+import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
@@ -52,7 +53,7 @@ public class Alpha {
     }
 
     public static void loginPage() {
-        System.out.println("--- Login ---");
+        System.out.println("\n--- Login ---");
         System.out.print("Username: ");
         String username = strScanner.nextLine();
         System.out.print("Password: ");
@@ -72,7 +73,7 @@ public class Alpha {
     }
 
     public static void registerPage() {
-        System.out.println("--- Register ---");
+        System.out.println("\n--- Register ---");
         System.out.print("Full Name: ");
         String fullName = strScanner.nextLine();
         System.out.print("Username: ");
@@ -110,7 +111,7 @@ public class Alpha {
     public static void dashboardPage() {
         if (currentUser.getRole().equals(User.UserRole.ADMIN)) {
             System.out.print("""
-                    --- Admin Dashboard ---
+                    \n--- Admin Dashboard ---
                     1. Manage Users
                     2. Manage Categories
                     3. Manage Products
@@ -144,7 +145,7 @@ public class Alpha {
             }
         } else if (currentUser.getRole().equals(User.UserRole.SELLER)) {
             System.out.print("""
-                    --- Seller Dashboard ---
+                    \n--- Seller Dashboard ---
                     1. Browse Products
                     2. View Your Products
                     3. Remove Product
@@ -164,7 +165,7 @@ public class Alpha {
             }
         } else if (currentUser.getRole().equals(User.UserRole.CUSTOMER)) {
             System.out.print("""
-                    --- Customer Dashboard ---
+                    \n--- Customer Dashboard ---
                     1. Browse
                     2. View Cart
                     3. Search Global
@@ -185,7 +186,7 @@ public class Alpha {
     }
 
     public static void manageUsersPage() {
-        System.out.println("--- Manage Users ---");
+        System.out.println("\n--- Manage Users ---");
         System.out.println(userService.toPrettyStringSuper());
 
         System.out.print("Remove user: ");
@@ -210,7 +211,7 @@ public class Alpha {
 
     public static void manageCategoriesPage() {
         System.out.print("""
-                --- Manage Categories ---
+                \n--- Manage Categories ---
                 1. View All Categories
                 2. Browse Categories
                 3. Add New Category
@@ -229,7 +230,7 @@ public class Alpha {
     }
 
     public static void displayAllCategoriesPage() {
-        System.out.println("--- All Categories ---");
+        System.out.println("\n--- All Categories ---");
         List<Category> categories = categoryService.getAll();
         if (categories.isEmpty()) {
             System.out.println("No categories available.");
@@ -239,7 +240,7 @@ public class Alpha {
     }
 
     public static void browseCategories() {
-        System.out.println("--- Browse ---");
+        System.out.println("\n--- Browse ---");
         String up = "Root";
         List<Category> level;
         List<Product> products;
@@ -303,7 +304,7 @@ public class Alpha {
     }
 
     public static void customerProductMenu(Product product) {
-        System.out.println("--- Product Menu ---");
+        System.out.println("\n--- Product Menu ---");
         if (product == null) {
             System.out.println("Product not found!");
             return;
@@ -323,7 +324,7 @@ public class Alpha {
     }
 
     public static void addToCartPage(Product product) {
-        System.out.println("--- Add to Cart ---");
+        System.out.println("\n--- Add to Cart ---");
         System.out.print("Enter quantity: ");
         Integer quantity = numScanner.nextInt();
         UUID userId = currentUser.getId();
@@ -347,9 +348,13 @@ public class Alpha {
     }
 
     public static void addNewCategoryPage() {
-        System.out.println("--- Add New Category ---");
+        System.out.println("\n--- Add New Category ---");
         System.out.print("Category Name: ");
         String name = strScanner.nextLine();
+        if (name.trim().equalsIgnoreCase("Root")) {
+            System.out.println("Category name cannot be 'root'.");
+            return;
+        }
         System.out.print("Parent Category (or 'Root'): ");
         String parentName = strScanner.nextLine().trim();
         UUID parentId = CategoryService.ROOT_UUID;
@@ -376,7 +381,7 @@ public class Alpha {
     }
 
     public static void removeCategoryPage() {
-        System.out.println("--- Remove Category ---");
+        System.out.println("\n--- Remove Category ---");
         System.out.print("Category Name: ");
         String name = strScanner.nextLine();
         Category category = categoryService.getByName(name);
@@ -395,7 +400,7 @@ public class Alpha {
 
     public static void manageProductsPage() {
         System.out.print("""
-                --- Manage Products ---
+                \n--- Manage Products ---
                 1. View All Products
                 2. Remove Product
                 input %\s""");
@@ -407,7 +412,7 @@ public class Alpha {
     }
 
     public static void displayAllProducts() {
-        System.out.println("--- All Products ---");
+        System.out.println("\n--- All Products ---");
         List<Product> products = productService.getAll();
         if (products.isEmpty()) {
             System.out.println("No products available.");
@@ -417,7 +422,7 @@ public class Alpha {
     }
 
     public static void removeProductPage() {
-        System.out.println("--- Remove Product ---");
+        System.out.println("\n--- Remove Product ---");
         System.out.print("Product Name: ");
         String name = strScanner.nextLine();
         Product product = productService.getByName(name);
@@ -435,7 +440,7 @@ public class Alpha {
 
     public static void manageCartsPage() {
         System.out.print("""
-                --- Manage Carts ---
+                \n--- Manage Carts ---
                 1. View All Carts
                 2. Remove Cart
                 input %\s""");
@@ -450,7 +455,7 @@ public class Alpha {
     }
 
     public static void displayAllCarts() {
-        System.out.println("--- All Carts ---");
+        System.out.println("\n--- All Carts ---");
         List<Cart> carts = cartService.getAll();
         if (carts.isEmpty()) {
             System.out.println("No carts available.");
@@ -460,7 +465,7 @@ public class Alpha {
     }
 
     public static void removeCartPage() {
-        System.out.println("--- Remove Cart ---");
+        System.out.println("\n--- Remove Cart ---");
         System.out.print("Customer Username: ");
         String username = strScanner.nextLine();
         User user = userService.getByUsername(username);
@@ -477,7 +482,7 @@ public class Alpha {
     }
 
     public static void createNewAdminPage() {
-        System.out.println("--- Create New Admin ---");
+        System.out.println("\n--- Create New Admin ---");
         System.out.print("Full Name: ");
         String fullName = strScanner.nextLine();
         System.out.print("Username: ");
@@ -495,21 +500,21 @@ public class Alpha {
     }
 
     public static void searchSuperPage() {
-        System.out.println("--- Search Super ---");
+        System.out.println("\n--- Search Super ---");
         System.out.print("Enter search term: ");
         String searchTerm = strScanner.nextLine();
         // TODO implement search functionality
     }
 
     public static void searchGlobalPage() {
-        System.out.println("--- Search Global ---");
+        System.out.println("\n--- Search Global ---");
         System.out.print("Enter search term: ");
         String searchTerm = strScanner.nextLine();
         // TODO implement global search functionality
     }
 
     public static void viewYourProductsPage() {
-        System.out.println("--- Your Products ---");
+        System.out.println("\n--- Your Products ---");
         List<Product> products = productService.getBySeller(currentUser.getId());
         if (products.isEmpty()) {
             System.out.println("You have no products listed.");
@@ -519,7 +524,7 @@ public class Alpha {
     }
 
     public static void removeSellerProductPage() {
-        System.out.println("--- Remove Your Product ---");
+        System.out.println("\n--- Remove Your Product ---");
         System.out.print("Product Name: ");
         String name = strScanner.nextLine();
         Product product = productService.getByName(name);
@@ -536,13 +541,27 @@ public class Alpha {
     }
 
     public static void addNewProductPage() {
-        System.out.println("--- Add New Product ---");
+        System.out.println("\n--- Add New Product ---");
         System.out.print("Product Name: ");
         String name = strScanner.nextLine();
         System.out.print("Enter Product Price: ");
-        Double price = numScanner.nextDouble();
+        double price;
+        try {
+            price = numScanner.nextDouble();
+        } catch (InputMismatchException e) {
+            System.out.println("Price must be a number.");
+            numScanner.nextLine();
+            return;
+        }
         System.out.print("Enter Product Quantity: ");
-        Integer quantity = numScanner.nextInt();
+        int quantity = numScanner.nextInt();
+        try {
+            quantity = numScanner.nextInt();
+        } catch (InputMismatchException e) {
+            System.out.println("Quantity must be a number.");
+            numScanner.nextLine();
+            return;
+        }
         System.out.print("Category Name: ");
         String categoryName = strScanner.nextLine();
 
@@ -566,7 +585,7 @@ public class Alpha {
     }
 
     public static void viewCustomerCartPage() {
-        System.out.println("--- Your Cart ---");
+        System.out.println("\n--- Your Cart ---");
         Cart cart = cartService.getByCustomerId(currentUser.getId());
         if (cart == null || cart.getItems().isEmpty()) {
             System.out.println("Your cart is empty.");
@@ -589,7 +608,7 @@ public class Alpha {
     }
 
     public static void checkoutCartPage(Cart cart) {
-        System.out.println("--- Checkout Cart ---");
+        System.out.println("\n--- Checkout Cart ---");
         if (cart == null || cart.getItems().isEmpty()) {
             System.out.println("Your cart is empty, cannot checkout.");
             return;
@@ -603,7 +622,7 @@ public class Alpha {
     }
 
     public static void removeCartItemPage(Cart cart) {
-        System.out.println("--- Remove Item from Cart ---");
+        System.out.println("\n--- Remove Item from Cart ---");
         if (cart == null || cart.getItems().isEmpty()) {
             System.out.println("Your cart is empty.");
             return;
