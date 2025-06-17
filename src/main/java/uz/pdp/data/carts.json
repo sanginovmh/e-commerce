@@ -1,10 +1,1 @@
-[ {
-  "id" : "b3ad385e-26b0-49eb-be2f-bf6f0e248204",
-  "active" : true,
-  "customerId" : "85702ea9-6dde-4b0c-8eb9-72c405bf28ac",
-  "items" : [ {
-    "productId" : "3248b64a-09d1-446d-be11-81785efe14eb",
-    "quantity" : 8
-  } ],
-  "paid" : false
-} ]
+[]
