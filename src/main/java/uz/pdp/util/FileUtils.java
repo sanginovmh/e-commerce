@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -56,7 +57,7 @@ public class FileUtils {
                     objectMapper.getTypeFactory().constructCollectionType(List.class, clazz));
         } catch (IOException e) {
             if (e.getMessage().contains("No content to map due to end-of-input")) {
-                return List.of();
+                return new ArrayList<>();
             }
             throw e;
         }
@@ -89,7 +90,7 @@ public class FileUtils {
                     xmlMapper.getTypeFactory().constructCollectionType(List.class, clazz));
         } catch (IOException e) {
             if (e.getMessage().contains("No content to map due to end-of-input")) {
-                return List.of();
+                return new ArrayList<>();
             }
             throw e;
         }

@@ -1,1 +1,8 @@
-<categories/>
+<categories>
+  <category>
+    <id>dbf9419d-8d9f-4798-bac4-f4dacc150a8c</id>
+    <active>true</active>
+    <name>Cars</name>
+    <parentId>00000000-0000-0000-0000-000000000000</parentId>
+  </category>
+</categories>
