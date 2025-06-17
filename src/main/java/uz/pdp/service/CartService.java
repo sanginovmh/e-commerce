@@ -89,7 +89,7 @@ public class CartService implements BaseService<Cart> {
         }
         for (Cart.Item item : cart.getItems()) {
             Product product = productService.get(item.getProductId());
-            if (product != null && item.getQuantity() <= product.getQuantity()) {
+            if (product == null || item.getQuantity() < product.getQuantity()) {
                 CartItemAbstract cartItemAbstract = new CartItemAbstract(cart);
                 cartItemAbstract.removeItemFromCart(product);
                 return false;
@@ -190,7 +190,7 @@ public class CartService implements BaseService<Cart> {
             if (c.isActive()) {
                 User customer = userService.get(c.getCustomerId());
                 sb.append(customer.getUsername()).append(", ")
-                        .append(CartUtils.toPrettyStringItems(c)).append(", ");
+                        .append(CartUtils.toPrettyStringItems(c));
                 try {
                     sb.append("Total: $").append(CartUtils.calculatePrice(c));
                 } catch (InvalidCartException | IOException e) {
