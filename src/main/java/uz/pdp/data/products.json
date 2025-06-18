@@ -56,10 +56,10 @@
   "sellerId" : "52c24309-5fa6-43d7-8733-98d7ba2ab056"
 }, {
   "id" : "677b44d0-bb5d-4ed7-9f5c-678402eca5f9",
-  "active" : true,
+  "active" : false,
   "name" : "MacBook pro M4",
   "price" : 1990.0,
-  "quantity" : 8,
+  "quantity" : 0,
   "categoryId" : "aaf49198-6030-4a89-ab5c-7fbe8d99016d",
   "sellerId" : "52c24309-5fa6-43d7-8733-98d7ba2ab056"
 }, {
