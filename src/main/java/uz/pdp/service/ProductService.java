@@ -2,7 +2,6 @@ package uz.pdp.service;
 
 import uz.pdp.base.BaseService;
 import uz.pdp.exception.InvalidProductException;
-import uz.pdp.model.Category;
 import uz.pdp.model.Product;
 import uz.pdp.util.FileUtils;
 
@@ -111,20 +110,6 @@ public class ProductService implements BaseService<Product> {
         return productList;
     }
 
-    public List<Category> getPath(String productName, CategoryService categoryService) {
-        UUID categoryId = getByName(productName).getCategoryId();
-        List<Category> path = new ArrayList<>();
-        while (true) {
-            Category category = categoryService.get(categoryId);
-            if (category == null || !category.isActive()) {
-                break;
-            }
-            path.add(category);
-            categoryId = category.getParentId();
-        }
-        return path;
-    }
-
     public boolean isProductValid(Product product) {
         return product.getPrice() > 0 && product.getQuantity() > 0;
     }
@@ -136,15 +121,6 @@ public class ProductService implements BaseService<Product> {
             }
         }
         return true;
-    }
-
-    public void removeProductsByCategory(UUID categoryId) throws IOException {
-        for (Product product : products) {
-            if (product.isActive() && product.getCategoryId().equals(categoryId)) {
-                product.setActive(false);
-            }
-        }
-        save();
     }
 
     public void buyProduct(UUID productId, int quantity) throws IOException, InvalidProductException {
@@ -167,6 +143,7 @@ public class ProductService implements BaseService<Product> {
         return FileUtils.readFromJson(FILE_NAME, Product.class);
     }
 
+    @Override
     public void clear() throws IOException {
         products = new ArrayList<>();
         save();

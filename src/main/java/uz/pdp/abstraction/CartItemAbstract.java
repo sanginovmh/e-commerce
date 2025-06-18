@@ -72,23 +72,6 @@ public class CartItemAbstract {
     }
 
     /**
-     * Evaluates the total price of items in the cart using the provided ProductService.
-     *
-     * @param productService The service to retrieve product details.
-     * @return The total price of all items in the cart.
-     */
-    public double evaluatePrice(ProductService productService) {
-        double totalPrice = 0.0;
-        for (Cart.Item item : cart.getItems()) {
-            Product product = productService.get(item.getProductId());
-            if (product != null) {
-                totalPrice += product.getPrice() * item.getQuantity();
-            }
-        }
-        return totalPrice;
-    }
-
-    /**
      * Removes an item from the cart.
      *
      * @param product The product to remove from the cart.

@@ -16,9 +16,9 @@ import java.util.UUID;
 
 public class Alpha {
     static UserService userService = new UserService();
-    static CategoryService categoryService = new CategoryService();
-    static ProductService productService = new ProductService();
     static CartService cartService = new CartService();
+    static ProductService productService = new ProductService();
+    static CategoryService categoryService = new CategoryService();
 
     static Scanner strScanner = new Scanner(System.in);
     static Scanner numScanner = new Scanner(System.in);
@@ -355,7 +355,7 @@ public class Alpha {
             cart = new Cart(userId);
             try {
                 cartService.add(cart);
-                System.out.println("New cart created!");
+                System.out.print("New cart created!");
                 waitClick();
             } catch (Exception e) {
                 System.out.println("Unable to create cart: " + e.getMessage());
@@ -554,14 +554,14 @@ public class Alpha {
     public static void searchSuperPage() {
         System.out.println("\n--- Search Super ---");
         System.out.print("Enter search term: ");
-        String searchTerm = strScanner.nextLine();
+        // String searchTerm = strScanner.nextLine();
         // TODO implement search functionality
     }
 
     public static void searchGlobalPage() {
         System.out.println("\n--- Search Global ---");
         System.out.print("Enter search term: fd");
-        String searchTerm = strScanner.nextLine();
+        // String searchTerm = strScanner.nextLine();
         // TODO implement global search functionality
     }
 
@@ -658,7 +658,7 @@ public class Alpha {
             waitClick();
             return;
         } else {
-            System.out.println(cartService.toPrettyString(List.of(cart), userService));
+            System.out.println(cartService.toUserPrettyString(List.of(cart)));
         }
         System.out.print("""
                 1. Checkout

@@ -38,4 +38,6 @@ public interface BaseService<T> {
      * @throws IOException if an I/O error occurs
      */
     void remove(UUID id) throws IOException;
+
+    void clear() throws IOException;
 }

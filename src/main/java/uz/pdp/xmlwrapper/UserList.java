@@ -11,12 +11,11 @@ import uz.pdp.model.User;
 import java.util.List;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @JacksonXmlRootElement(localName = "users")
 public class UserList {
-
-    @JacksonXmlElementWrapper(useWrapping = false)
     @JacksonXmlProperty(localName = "user")
+    @JacksonXmlElementWrapper(useWrapping = false)
     private List<User> users;
 }

@@ -172,6 +172,7 @@ public class CategoryService implements BaseService<Category> {
         return FileUtils.readFromXml(FILE_NAME, Category.class);
     }
 
+    @Override
     public void clear() throws IOException {
         categories.clear();
         save();

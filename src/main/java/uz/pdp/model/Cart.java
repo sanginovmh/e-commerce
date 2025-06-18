@@ -8,15 +8,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Data
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @JacksonXmlRootElement(localName = "cart")
-@NoArgsConstructor
-@Data
 public class Cart extends BaseModel {
-    @JacksonXmlRootElement(localName = "item")
-    @AllArgsConstructor
-    @NoArgsConstructor
     @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @JacksonXmlRootElement(localName = "item")
     public static class Item {
         UUID productId;
         Integer quantity;
