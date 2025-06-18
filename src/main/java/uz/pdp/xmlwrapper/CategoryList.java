@@ -11,12 +11,11 @@ import uz.pdp.model.Category;
 import java.util.List;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @JacksonXmlRootElement(localName = "categories")
 public class CategoryList {
-
-    @JacksonXmlElementWrapper(useWrapping = false)
     @JacksonXmlProperty(localName = "category")
+    @JacksonXmlElementWrapper(useWrapping = false)
     private List<Category> categories;
 }

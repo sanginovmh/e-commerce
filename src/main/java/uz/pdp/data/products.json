@@ -19,7 +19,7 @@
   "active" : true,
   "name" : "Nokia 3",
   "price" : 100.0,
-  "quantity" : 19,
+  "quantity" : 17,
   "categoryId" : "e3daa2b8-d3ed-411d-9c8f-306586433b9b",
   "sellerId" : "52c24309-5fa6-43d7-8733-98d7ba2ab056"
 }, {
@@ -64,10 +64,10 @@
   "sellerId" : "52c24309-5fa6-43d7-8733-98d7ba2ab056"
 }, {
   "id" : "cfc3de71-ac26-45f3-a540-6c078f2f7288",
-  "active" : true,
+  "active" : false,
   "name" : "Big mac",
   "price" : 5.5,
-  "quantity" : 233,
+  "quantity" : 0,
   "categoryId" : "66bdf4b6-bd78-4ee4-942e-9db48e2f2a33",
   "sellerId" : "52c24309-5fa6-43d7-8733-98d7ba2ab056"
 }, {
@@ -80,10 +80,10 @@
   "sellerId" : "52c24309-5fa6-43d7-8733-98d7ba2ab056"
 }, {
   "id" : "be03040b-0899-465e-862d-7b8f459b9a14",
-  "active" : true,
+  "active" : false,
   "name" : "Wendy's",
   "price" : 4.1,
-  "quantity" : 211,
+  "quantity" : 0,
   "categoryId" : "66bdf4b6-bd78-4ee4-942e-9db48e2f2a33",
   "sellerId" : "52c24309-5fa6-43d7-8733-98d7ba2ab056"
 } ]

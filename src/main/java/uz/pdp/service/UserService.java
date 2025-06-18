@@ -99,36 +99,6 @@ public class UserService implements BaseService<User> {
         }
         return null;
     }
-    
-    /**
-     * Checks if a user with the given username exists.
-     *
-     * @param userId the username to check
-     * @return true if the user exists, false otherwise
-     */
-    public String getUsername(UUID userId) {
-        User user = get(userId);
-        if (user != null) {
-            return user.getUsername();
-        }
-        return "Unknown User";
-    } 
-
-    /**
-     * Retrieves a list of users with the specified role.
-     *
-     * @param role the role of the users to retrieve
-     * @return a list of users with the specified role
-     */
-    public List<User> getByRole(User.UserRole role) {
-        List<User> usersOfRole = new ArrayList<>();
-        for (User user : users) {
-            if (user.isActive() && user.getRole().equals(role)) {
-                usersOfRole.add(user);
-            }
-        }
-        return usersOfRole;
-    }
 
     /**
      * Checks if a username is valid (not null, not blank, and not already taken).
@@ -199,6 +169,7 @@ public class UserService implements BaseService<User> {
      *
      * @throws IOException if an I/O error occurs
      */
+    @Override
     public void clear() throws IOException {
         users = new ArrayList<>();
         save();
@@ -208,9 +179,7 @@ public class UserService implements BaseService<User> {
     public String toPrettyStringSuper() {
         StringBuilder sb = new StringBuilder();
         for (User u : getAll()) {
-            sb.append(u.getFullName() + ", "
-                    + u.getUsername() + ", "
-                    + u.getRole() + "\n");
+            sb.append(u.getFullName()).append(" - ").append(u.getUsername()).append(" - ").append(u.getRole()).append("\n");
         }
         return sb.toString();
     }

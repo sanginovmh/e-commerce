@@ -89,7 +89,7 @@ public class CartService implements BaseService<Cart> {
         }
         for (Cart.Item item : cart.getItems()) {
             Product product = productService.get(item.getProductId());
-            if (product == null || item.getQuantity() < product.getQuantity()) {
+            if (product == null || !product.isActive() || item.getQuantity() > product.getQuantity()) {
                 CartItemAbstract cartItemAbstract = new CartItemAbstract(cart);
                 cartItemAbstract.removeItemFromCart(product);
                 return false;
@@ -106,16 +106,6 @@ public class CartService implements BaseService<Cart> {
             }
         }
         return cartList;
-    }
-
-    public void evaluatePrice(UUID customerId, ProductService productService)
-            throws InvalidCartException, IOException {
-        Cart cart = getByCustomerId(customerId);
-        if (cart == null) {
-            throw new InvalidCartException("Cart not found for customer: " + customerId);
-        }
-        CartItemAbstract cartItemAbstract = new CartItemAbstract(cart);
-        double totalPrice = cartItemAbstract.evaluatePrice(productService);
     }
 
     public Cart getByCustomerId(UUID customerId) {
@@ -149,17 +139,6 @@ public class CartService implements BaseService<Cart> {
         save();
     }
 
-    public void updateItemInCart(UUID customerId, Product product, int quantity) throws InvalidCartException, IllegalArgumentException, IOException {
-        Cart cart = getByCustomerId(customerId);
-        if (cart == null) {
-            throw new InvalidCartException("Cart not found for customer: " + customerId);
-        }
-
-        CartItemAbstract cartItemAbstract = new CartItemAbstract(cart);
-        cartItemAbstract.updateItemInCart(product, quantity);
-        save();
-    }
-
     public void removeItemFromCart(Cart cart, Product product) throws InvalidCartException, IOException {
         CartItemAbstract cartItemAbstract = new CartItemAbstract(cart);
         cartItemAbstract.removeItemFromCart(product);
@@ -179,6 +158,7 @@ public class CartService implements BaseService<Cart> {
         return FileUtils.readFromJson(FILE_NAME, Cart.class);
     }
 
+    @Override
     public void clear() throws IOException {
         carts = new ArrayList<>();
         save();
@@ -189,10 +169,28 @@ public class CartService implements BaseService<Cart> {
         for (Cart c : carts) {
             if (c.isActive()) {
                 User customer = userService.get(c.getCustomerId());
-                sb.append(customer.getUsername()).append(", ")
+                sb.append(customer.getUsername()).append(" - ")
                         .append(CartUtils.toPrettyStringItems(c));
                 try {
-                    sb.append("Total: $").append(CartUtils.calculatePrice(c));
+                    String totalPrice = String.format("%.2f", CartUtils.calculatePrice(c));
+                    sb.append("Total: $").append(totalPrice);
+                } catch (InvalidCartException | IOException e) {
+                    sb.append("Error calculating price: ").append(e.getMessage());
+                }
+                sb.append("\n");
+            }
+        }
+        return sb.toString();
+    }
+
+    public String toUserPrettyString(List<Cart> carts) {
+        StringBuilder sb = new StringBuilder();
+        for (Cart c : carts) {
+            if (c.isActive()) {
+                sb.append(CartUtils.toPrettyStringItems(c));
+                try {
+                    String totalPrice = String.format("%.2f", CartUtils.calculatePrice(c));
+                    sb.append("Total: $").append(totalPrice);
                 } catch (InvalidCartException | IOException e) {
                     sb.append("Error calculating price: ").append(e.getMessage());
                 }
