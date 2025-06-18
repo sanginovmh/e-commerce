@@ -16,7 +16,7 @@ public class ProductService implements BaseService<Product> {
 
     public ProductService() {
         try {
-            products = readProducts();
+            products = loadFromFile();
         } catch (IOException e) {
             products = new ArrayList<>();
         }
@@ -24,15 +24,14 @@ public class ProductService implements BaseService<Product> {
 
     @Override
     public void add(Product product) throws IOException, IllegalArgumentException {
-        products = readProducts();
-        if (isProductValid(product)) {
-            Product found = getByName(product.getName());
+        if (product.getPrice() > 0 && product.getQuantity() > 0) {
+            Product found = findByName(product.getName());
             if (found != null) {
-                product.setQuantity(product.getQuantity() + found.getQuantity());
-                update(found.getId(), product);
+                found.setQuantity(product.getQuantity() + found.getQuantity());
             } else {
                 products.add(product);
             }
+
             save();
         } else {
             throw new InvalidProductException("Invalid product parameters.");
@@ -50,13 +49,27 @@ public class ProductService implements BaseService<Product> {
     }
 
     @Override
+    public List<Product> getAll() {
+        List<Product> productList = new ArrayList<>();
+        for (Product product : products) {
+            if (product.isActive()) {
+                productList.add(product);
+            }
+        }
+
+        return productList;
+    }
+
+    @Override
     public boolean update(UUID id, Product product) throws IOException {
-        Product found = get(id);
-        found.setName(product.getName());
-        found.setPrice(product.getPrice());
-        found.setQuantity(product.getQuantity());
-        found.setSellerId(product.getSellerId());
-        found.setCategoryId(product.getCategoryId());
+        Product existing = get(id);
+        if (existing == null) return false;
+
+        existing.setName(product.getName());
+        existing.setPrice(product.getPrice());
+        existing.setQuantity(product.getQuantity());
+        existing.setSellerId(product.getSellerId());
+        existing.setCategoryId(product.getCategoryId());
 
         save();
         return true;
@@ -67,51 +80,48 @@ public class ProductService implements BaseService<Product> {
         Product found = get(id);
         if (found != null && found.isActive()) {
             found.setActive(false);
+
             save();
         }
     }
 
-    public List<Product> getByCategoryId(UUID categoryId) {
-        List<Product> productList = new ArrayList<>();
-        for (Product product : products) {
-            if (product.isActive() && product.getCategoryId().equals(categoryId)) {
-                productList.add(product);
-            }
-        }
-        return productList;
+    @Override
+    public void clear() throws IOException {
+        products = new ArrayList<>();
+        save();
     }
 
-    public Product getByName(String name) {
+    public List<Product> getByCategoryId(UUID categoryId) {
+        List<Product> categoryProducts = new ArrayList<>();
         for (Product product : products) {
-            if (product.isActive() && product.getName().equalsIgnoreCase(name)) {
+            if (product.isActive() && product.getCategoryId().equals(categoryId)) {
+                categoryProducts.add(product);
+            }
+        }
+
+        return categoryProducts;
+    }
+
+    public List<Product> getBySeller(UUID sellerId) {
+        List<Product> sellerProducts = new ArrayList<>();
+        for (Product product : products) {
+            if (product.isActive() && product.getSellerId().equals(sellerId)) {
+                sellerProducts.add(product);
+            }
+        }
+
+        return sellerProducts;
+    }
+
+    public Product findByName(String name) {
+        String nameLowerCase = name.toLowerCase();
+        for (Product product : products) {
+            if (product.isActive() && product.getName()
+                    .toLowerCase().equals(nameLowerCase)) {
                 return product;
             }
         }
         return null;
-    }
-
-    public List<Product> getBySeller(UUID sellerId) {
-        List<Product> productList = new ArrayList<>();
-        for (Product product : products) {
-            if (product.isActive() && product.getSellerId().equals(sellerId)) {
-                productList.add(product);
-            }
-        }
-        return productList;
-    }
-
-    public List<Product> getAll() {
-        List<Product> productList = new ArrayList<>();
-        for (Product product : products) {
-            if (product.isActive()) {
-                productList.add(product);
-            }
-        }
-        return productList;
-    }
-
-    public boolean isProductValid(Product product) {
-        return product.getPrice() > 0 && product.getQuantity() > 0;
     }
 
     public boolean isCategoryEmpty(UUID categoryId) {
@@ -123,15 +133,28 @@ public class ProductService implements BaseService<Product> {
         return true;
     }
 
-    public void buyProduct(UUID productId, int quantity) throws IOException, InvalidProductException {
+    public void purchaseProducts(
+            UUID productId,
+            int quantity
+    ) throws IOException,
+            InvalidProductException {
         Product product = get(productId);
         if (product == null || !product.isActive()) {
             throw new InvalidProductException("Product not found or inactive.");
         }
+
+        if (quantity <= 0) {
+            throw new InvalidProductException("Quantity must be positive.");
+        }
+        if (quantity > product.getQuantity()) {
+            throw new InvalidProductException("Insufficient stock.");
+        }
+
         product.setQuantity(product.getQuantity() - quantity);
         if (product.getQuantity() == 0) {
             product.setActive(false);
         }
+
         save();
     }
 
@@ -139,23 +162,7 @@ public class ProductService implements BaseService<Product> {
         FileUtils.writeToJson(FILE_NAME, products);
     }
 
-    private List<Product> readProducts() throws IOException {
+    private List<Product> loadFromFile() throws IOException {
         return FileUtils.readFromJson(FILE_NAME, Product.class);
-    }
-
-    @Override
-    public void clear() throws IOException {
-        products = new ArrayList<>();
-        save();
-    }
-
-    public String toPrettyString(List<Product> list) {
-        StringBuilder sb = new StringBuilder();
-        for (Product product : list) {
-            sb.append(product.getName()).append(" - $")
-                    .append(product.getPrice()).append(" - quantity: ")
-                    .append(product.getQuantity()).append("\n");
-        }
-        return sb.toString();
     }
 }

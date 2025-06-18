@@ -1,6 +1,7 @@
 package uz.pdp.base;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.UUID;
 
 public interface BaseService<T> {
@@ -20,6 +21,8 @@ public interface BaseService<T> {
      * @return the item of type T
      */
     T get(UUID id);
+
+    List<T> getAll();
 
     /**
      * Updates an existing item of type T.

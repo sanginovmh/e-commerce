@@ -51,15 +51,15 @@
   "active" : true,
   "name" : "HP 11",
   "price" : 499.0,
-  "quantity" : 7,
+  "quantity" : 5,
   "categoryId" : "de446ef3-b574-4f43-bc35-86735d02ad0c",
   "sellerId" : "52c24309-5fa6-43d7-8733-98d7ba2ab056"
 }, {
   "id" : "677b44d0-bb5d-4ed7-9f5c-678402eca5f9",
-  "active" : false,
+  "active" : true,
   "name" : "MacBook pro M4",
   "price" : 1990.0,
-  "quantity" : 0,
+  "quantity" : 6,
   "categoryId" : "aaf49198-6030-4a89-ab5c-7fbe8d99016d",
   "sellerId" : "52c24309-5fa6-43d7-8733-98d7ba2ab056"
 }, {
@@ -80,10 +80,10 @@
   "sellerId" : "52c24309-5fa6-43d7-8733-98d7ba2ab056"
 }, {
   "id" : "be03040b-0899-465e-862d-7b8f459b9a14",
-  "active" : false,
+  "active" : true,
   "name" : "Wendy's",
   "price" : 4.1,
-  "quantity" : 0,
+  "quantity" : 701,
   "categoryId" : "66bdf4b6-bd78-4ee4-942e-9db48e2f2a33",
   "sellerId" : "52c24309-5fa6-43d7-8733-98d7ba2ab056"
 } ]

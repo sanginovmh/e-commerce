@@ -1,7 +1,7 @@
 package uz.pdp.service;
 
 import uz.pdp.base.BaseService;
-import uz.pdp.exception.InvalidUsernameException;
+import uz.pdp.exception.InvalidUserException;
 import uz.pdp.model.User;
 import uz.pdp.util.FileUtils;
 import uz.pdp.xmlwrapper.UserList;
@@ -17,20 +17,20 @@ public class UserService implements BaseService<User> {
 
     public UserService() {
         try {
-            users = readUsers();
+            users = loadFromFile();
         } catch (IOException e) {
             users = new ArrayList<>();
         }
     }
 
     @Override
-    public void add(User user) throws IOException, InvalidUsernameException {
-        users = readUsers();
+    public void add(User user) throws IOException, InvalidUserException {
         if (isUsernameValid(user.getUsername())) {
             users.add(user);
+
             save();
         } else {
-            throw new InvalidUsernameException("Username is not valid or already taken.");
+            throw new InvalidUserException("Username is not valid or already taken.");
         }
     }
 
@@ -42,6 +42,18 @@ public class UserService implements BaseService<User> {
             }
         }
         return null;
+    }
+
+    @Override
+    public List<User> getAll() {
+        List<User> activeUsers = new ArrayList<>();
+        for (User user : users) {
+            if (user.isActive()) {
+                activeUsers.add(user);
+            }
+        }
+
+        return activeUsers;
     }
 
     @Override
@@ -69,118 +81,47 @@ public class UserService implements BaseService<User> {
         }
     }
 
-    /**
-     * Logs in a user with the given username and password.
-     *
-     * @param username the username of the user
-     * @param password the password of the user
-     * @return the User object if login is successful, null otherwise
-     */
-    public User login(String username, String password) {
-        for (User user : users) {
-            if (user.isActive() && user.getUsername().equals(username) && user.getPassword().equals(password)) {
-                return user;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Retrieves a user by their username.
-     *
-     * @param username the username of the user to retrieve
-     * @return the User object if found, null otherwise
-     */
-    public User getByUsername(String username) {
-        for (User user : users) {
-            if (user.isActive() && user.getUsername().equals(username)) {
-                return user;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Checks if a username is valid (not null, not blank, and not already taken).
-     *
-     * @param username the username to validate
-     * @return true if the username is valid, false otherwise
-     */
-    private boolean isUsernameUsed(String username) {
-        for (User user : users) {
-            if (user.isActive() && user.getUsername().equals(username)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
-     * Validates a username based on specific criteria:
-     * - Must be at least 3 characters long
-     * - Can contain letters, digits, dots, underscores, and hyphens
-     * - Must not be blank
-     * - Must not already be used by another user
-     *
-     * @param username the username to validate
-     * @return true if the username is valid, false otherwise
-     */
-    public boolean isUsernameValid(String username) {
-        return username.matches("^[a-zA-Z0-9._-]{3,}$") && isUsernameUsed(username) && !username.isBlank();
-    }
-
-    /**
-     * Retrieves a list of all active users.
-     *
-     * @return a list of active users
-     */
-    public List<User> getAll() {
-        List<User> activeUsers = new ArrayList<>();
-        for (User user : users) {
-            if (user.isActive()) {
-                activeUsers.add(user);
-            }
-        }
-        return activeUsers;
-    }
-
-    /**
-     * Initializes the user service by reading users from the XML file.
-     *
-     * @throws IOException if an I/O error occurs
-     */
-    private void save() throws IOException {
-        UserList userList = new UserList(users);
-        FileUtils.writeToXml(FILE_NAME, userList);
-    }
-
-    /**
-     * Reads the list of users from the XML file.
-     *
-     * @return a list of users
-     * @throws IOException if an I/O error occurs
-     */
-    private List<User> readUsers() throws IOException {
-        return FileUtils.readFromXml(FILE_NAME, User.class);
-    }
-
-    /**
-     * Clears the user list and saves the empty list to the XML file.
-     *
-     * @throws IOException if an I/O error occurs
-     */
     @Override
     public void clear() throws IOException {
         users = new ArrayList<>();
         save();
     }
 
-
-    public String toPrettyStringSuper() {
-        StringBuilder sb = new StringBuilder();
-        for (User u : getAll()) {
-            sb.append(u.getFullName()).append(" - ").append(u.getUsername()).append(" - ").append(u.getRole()).append("\n");
+    public User login(String username, String password) {
+        String usernameLowerCase = username.toLowerCase();
+        for (User user : users) {
+            if (user.isActive()
+                    && user.getUsername().toLowerCase().equals(usernameLowerCase)
+                    && user.getPassword().equals(password)) {
+                return user;
+            }
         }
-        return sb.toString();
+        return null;
+    }
+
+    public User findByUsername(String username) {
+        String usernameLowerCase = username.toLowerCase();
+        for (User user : users) {
+            if (user.isActive()
+                    && user.getUsername().toLowerCase().equals(usernameLowerCase)) {
+                return user;
+            }
+        }
+        return null;
+    }
+
+    public boolean isUsernameValid(String username) {
+        return username.matches("^[a-zA-Z0-9._-]{3,12}$")
+                && findByUsername(username) == null
+                && !username.isBlank();
+    }
+
+    private void save() throws IOException {
+        UserList userList = new UserList(users);
+        FileUtils.writeToXml(FILE_NAME, userList);
+    }
+
+    private List<User> loadFromFile() throws IOException {
+        return FileUtils.readFromXml(FILE_NAME, User.class);
     }
 }

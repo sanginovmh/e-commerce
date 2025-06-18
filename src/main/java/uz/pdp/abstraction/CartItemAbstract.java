@@ -4,95 +4,46 @@ import lombok.RequiredArgsConstructor;
 import uz.pdp.model.Cart;
 import uz.pdp.model.Product;
 import uz.pdp.service.ProductService;
+import uz.pdp.model.Cart.Item;
 
 import java.io.IOException;
 import java.util.UUID;
 
 @RequiredArgsConstructor
-public class CartItemAbstract {
+public final class CartItemAbstract {
     private final Cart cart;
 
-    /**
-     * Adds an item to the cart if the quantity is valid and the product is not already in the cart.
-     *
-     * @param product  The product to add to the cart.
-     * @param quantity The quantity of the product to add.
-     * @throws IllegalArgumentException if the quantity is invalid or the product is already in the cart.
-     */
     public void addItemToCart(Product product, int quantity) throws IllegalArgumentException {
-        Cart.Item found = getItemInCart(product.getId());
-        if (found != null) {
-            int oldQuantity = found.getQuantity();
-            updateItemInCart(product, quantity + oldQuantity);
+        Item existing = getItemInCart(product.getId());
+        if (existing != null) {
+            existing.setQuantity(existing.getQuantity() + quantity);
             return;
         }
-        if (isQuantityValid(product, quantity)) {
-            Cart.Item item = new Cart.Item(product.getId(), quantity);
+
+        if (quantity > 0 && product.getQuantity() >= quantity) {
+            Item item = new Item(product.getId(), quantity);
             cart.getItems().add(item);
         } else {
             throw new IllegalArgumentException("Invalid quantity for product: " + product.getName());
         }
     }
 
-    /**
-     * Updates the quantity of an item in the cart.
-     *
-     * @param product  The product to update.
-     * @param quantity The new quantity for the product.
-     * @throws IllegalArgumentException if the quantity is invalid or the product is not in the cart.
-     */
-    public void updateItemInCart(Product product, int quantity) throws IllegalArgumentException {
-        if (isQuantityValid(product, quantity)) {
-            for (Cart.Item item : cart.getItems()) {
-                if (item.getProductId().equals(product.getId())) {
-                    item.setQuantity(quantity);
-                    return;
-                }
-            }
-            throw new IllegalArgumentException("Product not found in cart: " + product.getName());
-        } else {
-            throw new IllegalArgumentException("Invalid quantity for product: " + product.getName());
-        }
-    }
-
-    /**
-     * Buys all items in the cart using the provided ProductService.
-     *
-     * @param productService The service to handle product purchases.
-     * @throws IllegalArgumentException if the cart is empty or has no items.
-     */
     public void buyItemsInCart(ProductService productService) throws IOException {
         if (cart.getItems() == null || cart.getItems().isEmpty()) {
             throw new IllegalArgumentException("Cart is empty, cannot proceed with purchase.");
         }
-        for (Cart.Item item : cart.getItems()) {
-            productService.buyProduct(item.getProductId(), item.getQuantity());
+        for (Item item : cart.getItems()) {
+            productService.purchaseProducts(item.getProductId(), item.getQuantity());
         }
         cart.setPaid(true);
     }
 
-    /**
-     * Removes an item from the cart.
-     *
-     * @param product The product to remove from the cart.
-     * @throws IllegalArgumentException if the product is not in the cart.
-     */
     public void removeItemFromCart(Product product) throws IllegalArgumentException {
         cart.getItems().removeIf(item -> item.getProductId().equals(product.getId()));
     }
 
-    /**
-     * Checks if the cart contains a specific product.
-     *
-     * @param p The product to check.
-     * @return true if the product is in the cart, false otherwise.
-     */
-    private boolean isQuantityValid(Product p, int q) {
-        return q > 0 && p.getQuantity() >= q;
-    }
-
-    private Cart.Item getItemInCart(UUID productId) {
-        for (Cart.Item item : cart.getItems()) {
+    private Item getItemInCart(UUID productId) {
+        for (Item item : cart.getItems()) {
             if (item.getProductId().equals(productId)) {
                 return item;
             }

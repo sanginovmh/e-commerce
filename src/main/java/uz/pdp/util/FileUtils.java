@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
-public class FileUtils {
+public final class FileUtils {
     private static final String PATH = "src/main/java/uz/pdp/data/";
 
     private static final ObjectMapper objectMapper;
@@ -31,26 +31,10 @@ public class FileUtils {
         xmlMapper.enable(SerializationFeature.INDENT_OUTPUT);
     }
 
-    /**
-     * Writes a list of objects to a JSON file.
-     *
-     * @param fileName the name of the file to write to
-     * @param t        the list of objects to write
-     * @param <T>      the type of objects in the list
-     * @throws IOException if an I/O error occurs
-     */
     public static <T> void writeToJson(String fileName, T t) throws IOException {
         objectMapper.writeValue(new File(PATH + fileName), t);
     }
 
-    /**
-     * Reads a list of objects from a JSON file.
-     *
-     * @param fileName the name of the file to read from
-     * @param <T>      the type of objects in the list
-     * @return a list of objects read from the file
-     * @throws IOException if an I/O error occurs
-     */
     public static <T> List<T> readFromJson(String fileName, Class<T> clazz) throws IOException {
         try {
             return objectMapper.readValue(new File(PATH + fileName),
@@ -63,27 +47,10 @@ public class FileUtils {
         }
     }
 
-    /**
-     * Writes an object to an XML file.
-     *
-     * @param fileName the name of the file to write to
-     * @param t        the object to write
-     * @param <T>      the type of the object
-     * @throws IOException if an I/O error occurs
-     */
     public static <T> void writeToXml(String fileName, T t) throws IOException {
         xmlMapper.writeValue(new File(PATH + fileName), t);
     }
 
-    /**
-     * Reads a list of objects from an XML file.
-     *
-     * @param fileName the name of the file to read from
-     * @param clazz    the class type of the objects in the list
-     * @param <T>      the type of objects in the list
-     * @return a list of objects read from the file
-     * @throws IOException if an I/O error occurs
-     */
     public static <T> List<T> readFromXml(String fileName, Class<T> clazz) throws IOException {
         try {
             return xmlMapper.readValue(new File(PATH + fileName),

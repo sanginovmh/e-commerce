@@ -4,6 +4,10 @@ import uz.pdp.model.Cart;
 import uz.pdp.model.Category;
 import uz.pdp.model.Product;
 import uz.pdp.model.User;
+import uz.pdp.renderer.CartRenderer;
+import uz.pdp.renderer.CategoryRenderer;
+import uz.pdp.renderer.ProductRenderer;
+import uz.pdp.renderer.UserRenderer;
 import uz.pdp.service.CartService;
 import uz.pdp.service.CategoryService;
 import uz.pdp.service.ProductService;
@@ -195,11 +199,12 @@ public class Alpha {
 
     public static void manageUsersPage() {
         System.out.println("\n--- Manage Users ---");
-        System.out.println(userService.toPrettyStringSuper());
+        List<User> users = userService.getAll();
+        System.out.println(UserRenderer.render(users));
 
         System.out.print("Remove user: ");
         String username = strScanner.nextLine();
-        User user = userService.getByUsername(username);
+        User user = userService.findByUsername(username);
         if (user != null) {
             if (user.getRole().equals(User.UserRole.ADMIN)) {
                 System.out.println("Cannot remove an admin user!");
@@ -249,7 +254,7 @@ public class Alpha {
             System.out.println("No categories available.");
             waitClick();
         } else {
-            System.out.println(categoryService.toPrettyString(categories));
+            System.out.println(CategoryRenderer.render(categories));
         }
         waitClick();
     }
@@ -261,13 +266,14 @@ public class Alpha {
         List<Product> products;
         while (true) {
             UUID categoryId = CategoryService.ROOT_UUID;
+            Category upCategory = categoryService.findByName(up);
             if (!up.equals("Root")) {
-                categoryId = categoryService.getByName(up).getId();
+                categoryId = upCategory.getId();
             }
-            level = categoryService.getChildren(categoryId);
-            System.out.println("\n- " + up + " -");
+            level = categoryService.getDecendents(categoryId);
+            System.out.println("\n- " + upCategory.getName() + " -");
             if (!level.isEmpty()) {
-                System.out.println(categoryService.toPrettyString(level));
+                System.out.println(CategoryRenderer.render(level));
             } else {
                 System.out.println("[no categories found]");
                 waitClick();
@@ -276,16 +282,18 @@ public class Alpha {
             String goTo = strScanner.nextLine().trim();
 
             if (!goTo.equals(".")) {
-                Category category = categoryService.getByName(goTo);
+                Category category = categoryService.findByName(goTo);
                 if (category != null) {
-                    level = categoryService.getChildren(category.getId());
+                    level = categoryService.getDecendents(category.getId());
                     if (level.isEmpty()) {
                         products = productService.getByCategoryId(category.getId());
                         System.out.println("- " + category.getName() + " -");
                         if (!products.isEmpty()) {
-                            System.out.println(productService.toPrettyString(products));
+                            System.out.println(ProductRenderer.render(products));
                             if (currentUser.getRole().equals(User.UserRole.CUSTOMER)) {
                                 selectProductPage();
+                            } else {
+                                waitClick();
                             }
                         } else {
                             System.out.println("[no products found]");
@@ -318,7 +326,7 @@ public class Alpha {
         System.out.print("Select: ");
         String input = strScanner.nextLine().trim();
         if (!input.equals(".")) {
-            Product product = productService.getByName(input);
+            Product product = productService.findByName(input);
             customerProductMenu(product);
         }
     }
@@ -330,7 +338,8 @@ public class Alpha {
             waitClick();
             return;
         }
-        System.out.println(productService.toPrettyString(List.of(product)));
+
+        System.out.println(ProductRenderer.render(product));
         System.out.print("""
                 1. Add to Cart
                 
@@ -350,7 +359,7 @@ public class Alpha {
         int quantity = numScanner.nextInt();
         UUID userId = currentUser.getId();
 
-        Cart cart = cartService.getByCustomerId(userId);
+        Cart cart = cartService.findByCustomerId(userId);
         if (cart == null) {
             cart = new Cart(userId);
             try {
@@ -388,7 +397,7 @@ public class Alpha {
         String parentName = strScanner.nextLine().trim();
         UUID parentId = CategoryService.ROOT_UUID;
         if (!parentName.equalsIgnoreCase("Root")) {
-            Category parentCategory = categoryService.getByName(parentName);
+            Category parentCategory = categoryService.findByName(parentName);
             if (parentCategory != null) {
                 if (!productService.isCategoryEmpty(parentId)) {
                     System.out.println("Parent category must be empty of products.");
@@ -417,7 +426,7 @@ public class Alpha {
         System.out.println("\n--- Remove Category ---");
         System.out.print("Category Name: ");
         String name = strScanner.nextLine();
-        Category category = categoryService.getByName(name);
+        Category category = categoryService.findByName(name);
         if (category != null) {
             try {
                 categoryService.remove(category.getId());
@@ -457,7 +466,7 @@ public class Alpha {
             System.out.println("No products available.");
             waitClick();
         } else {
-            System.out.println(productService.toPrettyString(products));
+            System.out.println(ProductRenderer.render(products));
         }
         waitClick();
     }
@@ -466,7 +475,7 @@ public class Alpha {
         System.out.println("\n--- Remove Product ---");
         System.out.print("Product Name: ");
         String name = strScanner.nextLine();
-        Product product = productService.getByName(name);
+        Product product = productService.findByName(name);
         if (product != null) {
             try {
                 productService.remove(product.getId());
@@ -489,7 +498,7 @@ public class Alpha {
                 2. Remove Cart
                 input %\s""");
         switch (strScanner.nextLine()) {
-            case "1" -> displayAllCarts();
+            case "1" -> viewAllCarts();
             case "2" -> removeCartPage();
             default -> {
                 System.out.println("Invalid input, try again!");
@@ -499,14 +508,14 @@ public class Alpha {
         }
     }
 
-    public static void displayAllCarts() {
+    public static void viewAllCarts() {
         System.out.println("\n--- All Carts ---");
         List<Cart> carts = cartService.getAll();
         if (carts.isEmpty()) {
             System.out.println("No carts available.");
             waitClick();
         } else {
-            System.out.println(cartService.toPrettyString(carts, userService));
+            System.out.println(CartRenderer.adminRender(carts, userService, productService));
         }
         waitClick();
     }
@@ -515,7 +524,7 @@ public class Alpha {
         System.out.println("\n--- Remove Cart ---");
         System.out.print("Customer Username: ");
         String username = strScanner.nextLine();
-        User user = userService.getByUsername(username);
+        User user = userService.findByUsername(username);
         if (user != null) {
             try {
                 cartService.removeByCustomerId(user.getId());
@@ -572,7 +581,7 @@ public class Alpha {
             System.out.println("You have no products listed.");
             waitClick();
         } else {
-            System.out.println(productService.toPrettyString(products));
+            System.out.println(ProductRenderer.render(products));
         }
         waitClick();
     }
@@ -581,7 +590,7 @@ public class Alpha {
         System.out.println("\n--- Remove Your Product ---");
         System.out.print("Product Name: ");
         String name = strScanner.nextLine();
-        Product product = productService.getByName(name);
+        Product product = productService.findByName(name);
         if (product != null && product.getSellerId().equals(currentUser.getId())) {
             try {
                 productService.remove(product.getId());
@@ -627,7 +636,7 @@ public class Alpha {
         System.out.print("Category Name: ");
         String categoryName = strScanner.nextLine();
 
-        Category category = categoryService.getByName(categoryName);
+        Category category = categoryService.findByName(categoryName);
         if (category != null) {
             UUID categoryId = category.getId();
             if (categoryService.isLast(categoryId)) {
@@ -652,13 +661,13 @@ public class Alpha {
 
     public static void viewCustomerCartPage() {
         System.out.println("\n--- Your Cart ---");
-        Cart cart = cartService.getByCustomerId(currentUser.getId());
+        Cart cart = cartService.findByCustomerId(currentUser.getId());
         if (cart == null || cart.getItems().isEmpty()) {
             System.out.println("Your cart is empty.");
             waitClick();
             return;
         } else {
-            System.out.println(cartService.toUserPrettyString(List.of(cart)));
+            System.out.println(CartRenderer.render(cart, productService));
         }
         System.out.print("""
                 1. Checkout
@@ -682,7 +691,7 @@ public class Alpha {
             return;
         }
         try {
-            cartService.checkout(cart, productService);
+            cartService.checkoutCart(cart, productService);
             System.out.println("Checkout successful! Thank you for your purchase.");
             waitClick();
         } catch (Exception e) {
@@ -700,7 +709,7 @@ public class Alpha {
         }
         System.out.print("Enter product name to remove: ");
         String productName = strScanner.nextLine();
-        Product product = productService.getByName(productName);
+        Product product = productService.findByName(productName);
         if (product == null) {
             System.out.println("Product not found in your cart.");
             waitClick();
@@ -719,7 +728,7 @@ public class Alpha {
     public static void printLastCategories() {
         System.out.println("\n- Available Categories -");
         List<Category> categories = categoryService.getLastCategories();
-        System.out.println(categoryService.toPrettyString(categories));
+        System.out.println(CategoryRenderer.render(categories));
     }
 
     public static void waitClick() {
