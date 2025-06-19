@@ -14,26 +14,20 @@ import java.util.UUID;
 public class Main {
     public static void main(String[] args) throws Exception {
 
-
         OrderService orderService = new OrderService();
-        Order.Customer customer = new Order.Customer(UUID.randomUUID(), "aaaaaa", "user");
-        Order.Seller seller = new Order.Seller(UUID.randomUUID(), " aaaa", "seller");
-        Order order = new Order();
-//        seller.setId(UUID.randomUUID());
-//        seller.setFullName("aa aa");
-//        seller.setUsername("seller");
-//        Order order = new Order();
-//        order.setCustomer(customer);
-//        order.setCartId(UUID.randomUUID());
-//        Product product = new Product("pamidor", 9.2, 9,UUID.randomUUID(),seller.getId());
-//        List<Cart.Item> products = new ArrayList<>();
-//        Cart.Item item = new Cart.Item();
-//        item.setProductId(product.getId());
-//        item.setQuantity(5);
-//        Cart cart = new Cart();
-//        CartService cartService = new CartService();
-//        cartService.checkoutCart(cart, new ProductService());
 
+        Order.Customer customer = new Order.Customer(UUID.randomUUID(), "John Doe", "john_doe");
+        List<Order.BoughtItem> boughtItems = new ArrayList<>();
+        Order.Seller seller = new Order.Seller(UUID.randomUUID(), "Seller Seller", "seller_se");
+        Order.BoughtItem item = new Order.BoughtItem(seller, UUID.randomUUID(), "Bananas", 40, 12.5, 40 * 12.5);
+        Order.BoughtItem item2 = new Order.BoughtItem(seller, UUID.randomUUID(), "Cars", 2, 12000, 2 * 12000);
+        boughtItems.add(item);
+        boughtItems.add(item2);
+        Order order = new Order(UUID.randomUUID(), customer, boughtItems, item.getTotalPaid() + item2.getTotalPaid());
+
+        orderService.add(order);
+
+        System.out.println(orderService.get(order.getId()));
 
     }
 }

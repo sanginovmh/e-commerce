@@ -1,1 +1,34 @@
-[]
+[ {
+  "id" : "43ef428e-e9aa-4d28-975a-5411a501439f",
+  "active" : true,
+  "cartId" : "b5d3a6d6-100b-45d3-850d-4b2beb850f30",
+  "customer" : {
+    "id" : "ee66943f-26bf-44ea-bd60-6e4a8efa65d3",
+    "fullName" : "John Doe",
+    "username" : "john_doe"
+  },
+  "boughtItems" : [ {
+    "seller" : {
+      "id" : "c8907d84-78d5-4927-b269-a7ce92638ae0",
+      "fullName" : "Seller Seller",
+      "username" : "seller_se"
+    },
+    "productId" : "13b0b40c-9a7e-42a1-94f6-e240665f4a45",
+    "product" : "Bananas",
+    "amountBought" : 40,
+    "pricePerPsc" : 12.5,
+    "totalPaid" : 500.0
+  }, {
+    "seller" : {
+      "id" : "c8907d84-78d5-4927-b269-a7ce92638ae0",
+      "fullName" : "Seller Seller",
+      "username" : "seller_se"
+    },
+    "productId" : "d2ac33ed-89e5-4bf3-a800-569fe2828a9b",
+    "product" : "Cars",
+    "amountBought" : 2,
+    "pricePerPsc" : 12000.0,
+    "totalPaid" : 24000.0
+  } ],
+  "grandTotal" : 24500.0
+} ]
