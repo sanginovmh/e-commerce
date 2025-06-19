@@ -7,26 +7,24 @@ import uz.pdp.util.FileUtils;
 import uz.pdp.xmlwrapper.UserList;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class UserService implements BaseService<User> {
     private static final String FILE_NAME = "users.xml";
-    List<User> users;
+    Map<UUID, User> usersByUuid;
 
     public UserService() {
         try {
-            users = loadFromFile();
+            usersByUuid = loadFromFile();
         } catch (IOException e) {
-            users = new ArrayList<>();
+            usersByUuid = new HashMap<>();
         }
     }
 
     @Override
     public void add(User user) throws IOException, InvalidUserException {
         if (isUsernameValid(user.getUsername())) {
-            users.add(user);
+            usersByUuid.put(user.getId(), user);
 
             save();
         } else {
@@ -36,18 +34,13 @@ public class UserService implements BaseService<User> {
 
     @Override
     public User get(UUID id) {
-        for (User user : users) {
-            if (user.isActive() && user.getId().equals(id)) {
-                return user;
-            }
-        }
-        return null;
+        return usersByUuid.get(id);
     }
 
     @Override
     public List<User> getAll() {
         List<User> activeUsers = new ArrayList<>();
-        for (User user : users) {
+        for (User user : usersByUuid.values()) {
             if (user.isActive()) {
                 activeUsers.add(user);
             }
@@ -58,12 +51,12 @@ public class UserService implements BaseService<User> {
 
     @Override
     public boolean update(UUID id, User user) throws IOException {
-        User found = get(id);
-        if (found != null) {
-            found.setFullName(user.getFullName());
-            found.setUsername(user.getUsername());
-            found.setPassword(user.getPassword());
-            found.setRole(user.getRole());
+        User existing = get(id);
+        if (existing != null) {
+            existing.setFullName(user.getFullName());
+            existing.setUsername(user.getUsername());
+            existing.setPassword(user.getPassword());
+            existing.setRole(user.getRole());
 
             save();
             return true;
@@ -83,13 +76,13 @@ public class UserService implements BaseService<User> {
 
     @Override
     public void clear() throws IOException {
-        users = new ArrayList<>();
+        usersByUuid = new HashMap<>();
         save();
     }
 
     public User login(String username, String password) {
         String usernameLowerCase = username.toLowerCase();
-        for (User user : users) {
+        for (User user : usersByUuid.values()) {
             if (user.isActive()
                     && user.getUsername().toLowerCase().equals(usernameLowerCase)
                     && user.getPassword().equals(password)) {
@@ -101,7 +94,7 @@ public class UserService implements BaseService<User> {
 
     public User findByUsername(String username) {
         String usernameLowerCase = username.toLowerCase();
-        for (User user : users) {
+        for (User user : usersByUuid.values()) {
             if (user.isActive()
                     && user.getUsername().toLowerCase().equals(usernameLowerCase)) {
                 return user;
@@ -117,11 +110,20 @@ public class UserService implements BaseService<User> {
     }
 
     private void save() throws IOException {
-        UserList userList = new UserList(users);
+        UserList userList = new UserList(usersByUuid.values());
         FileUtils.writeToXml(FILE_NAME, userList);
     }
 
-    private List<User> loadFromFile() throws IOException {
-        return FileUtils.readFromXml(FILE_NAME, User.class);
+    private Map<UUID, User> loadFromFile() throws IOException {
+        Map<UUID, User> userHashMap = new HashMap<>();
+
+        List<User> users = FileUtils.readFromXml(FILE_NAME, User.class);
+        if (users != null) {
+            for (User user : users) {
+                userHashMap.put(user.getId(), user);
+            }
+        }
+
+        return userHashMap;
     }
 }

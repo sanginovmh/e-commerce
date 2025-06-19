@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import uz.pdp.model.User;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Data
@@ -15,6 +17,10 @@ import java.util.List;
 @AllArgsConstructor
 @JacksonXmlRootElement(localName = "users")
 public final class UserList {
+    public UserList(Collection<User> collection) {
+        users = new ArrayList<>(collection);
+    }
+
     @JacksonXmlProperty(localName = "user")
     @JacksonXmlElementWrapper(useWrapping = false)
     private List<User> users;
