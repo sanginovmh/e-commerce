@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Getter
 public abstract class BaseModel {
-    private UUID id;
+    private final UUID id;
     @Setter
     private boolean active = true;
 

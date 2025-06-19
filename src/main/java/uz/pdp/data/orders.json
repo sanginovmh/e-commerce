@@ -1,0 +1,35 @@
+[ {
+  "id" : "56cc36bc-8133-4ad4-ae61-9eaae9a67b01",
+  "active" : true,
+  "cartId" : "5e83b28e-e912-410e-a3b7-87831460635b",
+  "customer" : {
+    "id" : "c50d1cba-6868-4bad-a1cc-067c65ba00b6",
+    "fullName" : "John Doe",
+    "username" : "jonny09"
+  },
+  "seller" : {
+    "id" : "2b081c2d-7a96-48e1-a10f-2e8f59859954",
+    "fullName" : "Anne Smith",
+    "username" : "annuanetta_s"
+  },
+  "boughtItems" : [ {
+    "productId" : "968502d0-8c22-4517-a998-0d2e8abd6c69",
+    "product" : "Apple",
+    "amountBought" : 17,
+    "pricePerPsc" : 0.3,
+    "totalPaid" : 5.1
+  }, {
+    "productId" : "c1bfbc49-40ab-431a-a9b6-239ffc3412a1",
+    "product" : "Banana",
+    "amountBought" : 6,
+    "pricePerPsc" : 0.9,
+    "totalPaid" : 5.4
+  }, {
+    "productId" : "864e508d-e406-4348-a088-9c18b48aa372",
+    "product" : "Tomato",
+    "amountBought" : 6,
+    "pricePerPsc" : 0.2,
+    "totalPaid" : 1.2000000000000002
+  } ],
+  "grandTotal" : 100.2333
+} ]

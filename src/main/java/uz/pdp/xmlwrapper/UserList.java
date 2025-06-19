@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JacksonXmlRootElement(localName = "users")
-public class UserList {
+public final class UserList {
     @JacksonXmlProperty(localName = "user")
     @JacksonXmlElementWrapper(useWrapping = false)
     private List<User> users;

@@ -24,13 +24,13 @@ public class CategoryService implements BaseService<Category> {
 
     @Override
     public void add(Category category) throws IOException, InvalidCategoryException {
-        if (findByName(category.getName()) == null) {
-            categories.add(category);
-
-            save();
-        } else {
+        if (findByName(category.getName()) != null) {
             throw new InvalidCategoryException("Category with this name already exists or is invalid.");
         }
+
+        categories.add(category);
+
+        save();
     }
 
     @Override
@@ -142,13 +142,26 @@ public class CategoryService implements BaseService<Category> {
         }
     }
 
-    public boolean isLast(UUID id) {
+    public void updateCategoryName(Category category, String newName) throws IOException {
+        if (get(category.getId()) == null) {
+            throw new InvalidCategoryException("Category not found for name: " + category.getName());
+        }
+        if (findByName(newName) != null) {
+            throw new InvalidCategoryException("Category name must be unique.");
+        }
+
+        category.setName(newName);
+
+        save();
+    }
+
+    public boolean hasSubcategories(UUID id) {
         for (Category category : categories) {
             if (category.isActive() && category.getParentId().equals(id)) {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     private void save() throws IOException {
