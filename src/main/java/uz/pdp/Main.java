@@ -16,5 +16,6 @@ public class Main {
 
         OrderService orderService = new OrderService();
         System.out.println(OrderRenderer.render(orderService.getAll()));
+        System.out.println("Hello World");
     }
 }
