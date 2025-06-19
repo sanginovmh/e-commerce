@@ -18,8 +18,7 @@ public final class OrderRenderer {
     }
 
     public static String render(Order order) {
-        return String.format("%-13s -> %s:\n",
-                order.getSeller().getUsername(),
+        return String.format("%-13s -> :\n",
                 order.getCustomer().getUsername()) +
                 renderBoughtItems(order.getBoughtItems()) +
                 String.format("Grand Total: %.2f\n",

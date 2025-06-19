@@ -82,17 +82,17 @@ public class OrderService implements BaseService<Order> {
         return ordersByCustomers;
     }
 
-    public List<Order> getBySellerId(UUID id) {
-        List<Order> ordersBySellers = new ArrayList<>();
-        for (Order order : orders) {
-            if (order.isActive()
-                    && order.getSeller().getId().equals(id)) {
-                ordersBySellers.add(order);
-            }
-        }
+//    public List<Order> getBySellerId(UUID id) {
+//        List<Order> ordersBySellers = new ArrayList<>();
+//        for (Order order : orders) {
+//            if (order.isActive()
+////                    && order.getSeller().getId().equals(id)) {
+//                ordersBySellers.add(order);
+//            }
+//        }
 
-        return ordersBySellers;
-    }
+//        return ordersBySellers;
+//    }
 
     public List<Order> filterHigherThan(double amount) {
         List<Order> filtered = new ArrayList<>();

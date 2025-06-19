@@ -16,7 +16,6 @@ import java.util.UUID;
 public class Order extends BaseModel {
     private UUID cartId;
     private Customer customer;
-    private Seller seller;
     private List<BoughtItem> boughtItems;
     private double grandTotal;
 
@@ -42,6 +41,7 @@ public class Order extends BaseModel {
     @NoArgsConstructor
     @AllArgsConstructor
     public static final class BoughtItem {
+        Seller seller;
         UUID productId;
         String product;
         int amountBought;
