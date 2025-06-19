@@ -9,7 +9,7 @@
   </user>
   <user>
     <id>6bd7bc1c-9478-43e3-ab60-3b0b7f5c22fe</id>
-    <active>true</active>
+    <active>false</active>
     <fullName>Userjon Userjonov</fullName>
     <username>user</username>
     <password>user</password>
@@ -22,5 +22,13 @@
     <username>seller</username>
     <password>seller</password>
     <role>SELLER</role>
+  </user>
+  <user>
+    <id>3d4e89f5-75ff-4707-a6fd-cdd4a1842202</id>
+    <active>true</active>
+    <fullName>Cillian Murphy</fullName>
+    <username>murphyy</username>
+    <password>11</password>
+    <role>CUSTOMER</role>
   </user>
 </users>

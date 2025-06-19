@@ -25,13 +25,13 @@ public class UserService implements BaseService<User> {
 
     @Override
     public void add(User user) throws IOException, InvalidUserException {
-        if (isUsernameValid(user.getUsername())) {
-            users.add(user);
-
-            save();
-        } else {
+        if (!isUsernameValid(user.getUsername())) {
             throw new InvalidUserException("Username is not valid or already taken.");
         }
+
+        users.add(user);
+
+        save();
     }
 
     @Override
@@ -58,27 +58,31 @@ public class UserService implements BaseService<User> {
 
     @Override
     public boolean update(UUID id, User user) throws IOException {
-        User found = get(id);
-        if (found != null) {
-            found.setFullName(user.getFullName());
-            found.setUsername(user.getUsername());
-            found.setPassword(user.getPassword());
-            found.setRole(user.getRole());
-
-            save();
-            return true;
+        User existing = get(id);
+        if (existing == null) {
+            return false;
         }
+
+        existing.setFullName(user.getFullName());
+        existing.setUsername(user.getUsername());
+        existing.setPassword(user.getPassword());
+        existing.setRole(user.getRole());
+
+        save();
+
         return true;
     }
 
     @Override
     public void remove(UUID id) throws IOException {
-        User found = get(id);
-        if (found != null) {
-            found.setActive(false);
-
-            save();
+        User existing = get(id);
+        if (existing == null) {
+            return;
         }
+
+        existing.setActive(false);
+
+        save();
     }
 
     @Override

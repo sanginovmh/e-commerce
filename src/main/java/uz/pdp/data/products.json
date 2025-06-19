@@ -1,7 +1,7 @@
 [ {
   "id" : "fc6d3a82-ef8f-4f8d-beba-eed3c4b50d6c",
   "active" : true,
-  "name" : "iPhone 16",
+  "name" : "iphone 16",
   "price" : 1000.0,
   "quantity" : 14,
   "categoryId" : "e3daa2b8-d3ed-411d-9c8f-306586433b9b",
@@ -83,7 +83,7 @@
   "active" : true,
   "name" : "Wendy's",
   "price" : 4.1,
-  "quantity" : 701,
+  "quantity" : 1,
   "categoryId" : "66bdf4b6-bd78-4ee4-942e-9db48e2f2a33",
   "sellerId" : "52c24309-5fa6-43d7-8733-98d7ba2ab056"
 } ]
