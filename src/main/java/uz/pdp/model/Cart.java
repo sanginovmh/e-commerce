@@ -11,17 +11,7 @@ import java.util.UUID;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@JacksonXmlRootElement(localName = "cart")
 public class Cart extends BaseModel {
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @JacksonXmlRootElement(localName = "item")
-    public static class Item {
-        UUID productId;
-        Integer quantity;
-    }
-
     public Cart(UUID customerId) {
         this.customerId = customerId;
     }
@@ -29,4 +19,12 @@ public class Cart extends BaseModel {
     private UUID customerId;
     private List<Item> items = new ArrayList<>();
     private boolean paid;
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Item {
+        UUID productId;
+        Integer quantity;
+    }
 }

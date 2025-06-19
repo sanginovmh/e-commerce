@@ -13,7 +13,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@JacksonXmlRootElement(localName = "product")
 public class Product extends BaseModel {
     private String name;
     private Double price;

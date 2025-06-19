@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JacksonXmlRootElement(localName = "categories")
-public class CategoryList {
+public final class CategoryList {
     @JacksonXmlProperty(localName = "category")
     @JacksonXmlElementWrapper(useWrapping = false)
     private List<Category> categories;
