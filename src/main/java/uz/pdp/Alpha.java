@@ -1,5 +1,7 @@
 package uz.pdp;
 
+import uz.pdp.exception.InvalidCategoryException;
+import uz.pdp.exception.InvalidProductException;
 import uz.pdp.model.Cart;
 import uz.pdp.model.Category;
 import uz.pdp.model.Product;
@@ -13,6 +15,7 @@ import uz.pdp.service.CategoryService;
 import uz.pdp.service.ProductService;
 import uz.pdp.service.UserService;
 
+import java.io.IOException;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
@@ -162,8 +165,9 @@ public class Alpha {
                     3. Remove Product
                     4. Add New Product
                     5. Search Global
+                    6. Change Your Product Name
                     
-                    6. Logout
+                    7. Logout
                     
                     input %\s""");
             switch (strScanner.nextLine()) {
@@ -172,7 +176,8 @@ public class Alpha {
                 case "3" -> removeSellerProductPage();
                 case "4" -> addNewProductPage();
                 case "5" -> searchGlobalPage();
-                case "6" -> logout();
+                case "6" -> changeYourNameProductPage();
+                case "7" -> logout();
             }
         } else if (currentUser.getRole().equals(User.UserRole.CUSTOMER)) {
             System.out.print("""
@@ -196,6 +201,7 @@ public class Alpha {
             logout();
         }
     }
+
 
     public static void manageUsersPage() {
         System.out.println("\n--- Manage Users ---");
@@ -233,17 +239,42 @@ public class Alpha {
                 2. Browse Categories
                 3. Add New Category
                 4. Remove Category
+                5. Change name category
                 input %\s""");
         switch (strScanner.nextLine()) {
             case "1" -> displayAllCategoriesPage();
             case "2" -> browseCategories();
             case "3" -> addNewCategoryPage();
             case "4" -> removeCategoryPage();
+            case "5" -> changeNameCategoryPage();
             default -> {
                 System.out.println("Invalid input, try again!");
                 waitClick();
                 manageCategoriesPage();
             }
+        }
+    }
+
+    public static void changeNameCategoryPage() {
+        displayAllCategoriesPage();
+        System.out.print("Enter category name: ");
+        Category category = categoryService.findByName(strScanner.nextLine());
+        if (category != null) {
+            System.out.print("Enter category new name: ");
+            String categoryNewName = strScanner.nextLine();
+            try {
+                categoryService.updateCategoryName(category, categoryNewName);
+                System.out.println("Category name changed successfully.");
+            } catch (IOException e) {
+                System.out.println("Error reading file: " + e.getMessage());
+                waitClick();
+            }catch (InvalidCategoryException e){
+                System.out.println("Category exception: " + e.getMessage());
+                waitClick();
+            }
+        } else {
+            System.out.println("Category not found.");
+            waitClick();
         }
     }
 
@@ -257,6 +288,30 @@ public class Alpha {
             System.out.println(CategoryRenderer.render(categories));
         }
         waitClick();
+    }
+
+    public static void changeYourNameProductPage() {
+        viewYourProductsPage();
+        System.out.print("Enter product name: ");
+        Product product = productService.findByName(strScanner.nextLine());
+        if (product != null) {
+            System.out.print("Enter product new name: ");
+            String productNewName = strScanner.nextLine();
+            try {
+                productService.updateProductName(product, productNewName);
+                System.out.println("Product name changed successfully.");
+            } catch (IOException e) {
+                System.out.println("Error reading file: " + e.getMessage());
+                waitClick();
+            }catch (InvalidProductException e){
+                System.out.println("Product exception: " + e.getMessage());
+                waitClick();
+            }
+        } else {
+            System.out.println("Product not found.");
+            waitClick();
+        }
+
     }
 
     public static void browseCategories() {
@@ -741,4 +796,5 @@ public class Alpha {
         waitClick();
         initialPage();
     }
+
 }

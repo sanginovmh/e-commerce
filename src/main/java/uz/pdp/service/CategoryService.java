@@ -1,5 +1,6 @@
 package uz.pdp.service;
 
+import lombok.Data;
 import uz.pdp.base.BaseService;
 import uz.pdp.exception.InvalidCategoryException;
 import uz.pdp.model.Category;
@@ -139,6 +140,20 @@ public class CategoryService implements BaseService<Category> {
                 collected.add(category.getId());
                 collectDecendents(category.getId(), collected);
             }
+        }
+    }
+
+    public void updateCategoryName(Category category, String newName) throws IOException {
+        if (get(category.getId()) != null) {
+            if (findByName(newName) == null) {
+                category.setName(newName);
+
+                save();
+            } else {
+                throw new InvalidCategoryException("Category name must be unique.");
+            }
+        } else {
+            throw new InvalidCategoryException("Category not found for name: " + category.getName());
         }
     }
 

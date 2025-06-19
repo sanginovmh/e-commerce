@@ -1,7 +1,9 @@
 package uz.pdp.service;
 
 import uz.pdp.base.BaseService;
+import uz.pdp.exception.InvalidCategoryException;
 import uz.pdp.exception.InvalidProductException;
+import uz.pdp.model.Category;
 import uz.pdp.model.Product;
 import uz.pdp.util.FileUtils;
 
@@ -131,6 +133,19 @@ public class ProductService implements BaseService<Product> {
             }
         }
         return true;
+    }
+    public void updateProductName(Product product, String newName) throws IOException {
+        if (get(product.getId()) != null) {
+            if (findByName(newName) == null) {
+                product.setName(newName);
+
+                save();
+            } else {
+                throw new InvalidProductException("Product name must be unique.");
+            }
+        } else {
+            throw new InvalidProductException("Product not found for name: " + product.getName());
+        }
     }
 
     public void purchaseProducts(
