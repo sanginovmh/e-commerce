@@ -1,9 +1,7 @@
 package uz.pdp.service;
 
 import uz.pdp.base.BaseService;
-import uz.pdp.exception.InvalidCategoryException;
 import uz.pdp.exception.InvalidProductException;
-import uz.pdp.model.Category;
 import uz.pdp.model.Product;
 import uz.pdp.util.FileUtils;
 
@@ -26,18 +24,18 @@ public class ProductService implements BaseService<Product> {
 
     @Override
     public void add(Product product) throws IOException, IllegalArgumentException {
-        if (product.getPrice() > 0 && product.getQuantity() > 0) {
-            Product found = findByName(product.getName());
-            if (found != null) {
-                found.setQuantity(product.getQuantity() + found.getQuantity());
-            } else {
-                products.add(product);
-            }
-
-            save();
-        } else {
-            throw new InvalidProductException("Invalid product parameters.");
+        if (product.getPrice() <= 0 || product.getQuantity() <= 0) {
+            throw new InvalidProductException("Product parameters must be positive.");
         }
+
+        Product existing = findByName(product.getName());
+        if (existing == null) {
+            products.add(product);
+        } else {
+            existing.setQuantity(product.getQuantity() + existing.getQuantity());
+        }
+
+        save();
     }
 
     @Override
@@ -134,30 +132,25 @@ public class ProductService implements BaseService<Product> {
         }
         return true;
     }
-    public void updateProductName(Product product, String newName) throws IOException {
-        if (get(product.getId()) != null) {
-            if (findByName(newName) == null) {
-                product.setName(newName);
 
-                save();
-            } else {
-                throw new InvalidProductException("Product name must be unique.");
-            }
-        } else {
+    public void updateProductName(Product product, String newName) throws IOException {
+        if (get(product.getId()) == null) {
             throw new InvalidProductException("Product not found for name: " + product.getName());
         }
+        if (findByName(newName) != null) {
+            throw new InvalidProductException("Product name must be unique.");
+        }
+
+        product.setName(newName);
+
+        save();
     }
 
-    public void purchaseProducts(
-            UUID productId,
-            int quantity
-    ) throws IOException,
-            InvalidProductException {
+    public void purchaseProducts(UUID productId, int quantity) throws IOException, InvalidProductException {
         Product product = get(productId);
         if (product == null || !product.isActive()) {
             throw new InvalidProductException("Product not found or inactive.");
         }
-
         if (quantity <= 0) {
             throw new InvalidProductException("Quantity must be positive.");
         }
@@ -166,6 +159,7 @@ public class ProductService implements BaseService<Product> {
         }
 
         product.setQuantity(product.getQuantity() - quantity);
+
         if (product.getQuantity() == 0) {
             product.setActive(false);
         }

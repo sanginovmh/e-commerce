@@ -83,7 +83,7 @@
   "active" : true,
   "name" : "Wendy's",
   "price" : 4.1,
-  "quantity" : 701,
+  "quantity" : 1,
   "categoryId" : "66bdf4b6-bd78-4ee4-942e-9db48e2f2a33",
   "sellerId" : "52c24309-5fa6-43d7-8733-98d7ba2ab056"
 } ]
