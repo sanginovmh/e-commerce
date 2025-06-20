@@ -31,34 +31,52 @@ public final class FileUtils {
         xmlMapper.enable(SerializationFeature.INDENT_OUTPUT);
     }
 
+
     public static <T> void writeToJson(String fileName, T t) throws IOException {
         objectMapper.writeValue(new File(PATH + fileName), t);
     }
 
+
     public static <T> List<T> readFromJson(String fileName, Class<T> clazz) throws IOException {
+        String filePath = PATH + fileName;
+
         try {
-            return objectMapper.readValue(new File(PATH + fileName),
+            return objectMapper.readValue(new File(filePath),
                     objectMapper.getTypeFactory().constructCollectionType(List.class, clazz));
+
         } catch (IOException e) {
             if (e.getMessage().contains("No content to map due to end-of-input")) {
-                return new ArrayList<>();
+                List<T> initList = new ArrayList<>();
+                writeToJson(filePath, initList);
+
+                return initList;
             }
+
             throw e;
         }
     }
+
 
     public static <T> void writeToXml(String fileName, T t) throws IOException {
         xmlMapper.writeValue(new File(PATH + fileName), t);
     }
 
+
     public static <T> List<T> readFromXml(String fileName, Class<T> clazz) throws IOException {
+        String filePath = PATH + fileName;
+
         try {
-            return xmlMapper.readValue(new File(PATH + fileName),
+            return xmlMapper.readValue(new File(filePath),
                     xmlMapper.getTypeFactory().constructCollectionType(List.class, clazz));
+
         } catch (IOException e) {
             if (e.getMessage().contains("No content to map due to end-of-input")) {
-                return new ArrayList<>();
+                List<T> initList = new ArrayList<>();
+                writeToXml(filePath, initList);
+
+                return initList;
             }
+
             throw e;
         }
     }

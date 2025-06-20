@@ -28,6 +28,7 @@ public final class CartUtils {
             if (product == null || !product.isActive()) {
                 throw new InvalidCartException("Product with ID " + item.getProductId() + " is not available.");
             }
+
             totalPrice += product.getPrice() * item.getQuantity();
         }
 

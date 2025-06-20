@@ -5,7 +5,6 @@ import uz.pdp.model.User;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 public final class UserRenderer {
     public static String render(List<User> list) {
         StringBuilder sb = new StringBuilder();

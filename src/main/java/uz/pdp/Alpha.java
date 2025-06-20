@@ -33,6 +33,7 @@ public class Alpha {
         initialPage();
     }
 
+    @SuppressWarnings("InfiniteRecursion")
     public static void initialPage() {
         System.out.print("""
                 --- Welcome to Alpha! ---
@@ -124,6 +125,7 @@ public class Alpha {
         dashboardPage();
     }
 
+    @SuppressWarnings("InfiniteRecursion")
     public static void dashboardPage() {
         if (currentUser.getRole().equals(User.UserRole.ADMIN)) {
             System.out.print("""
@@ -359,8 +361,7 @@ public class Alpha {
                 currentId = CategoryService.ROOT_UUID;
             }
 
-
-            List<Category> children = categoryService.getDecendents(currentId);
+            List<Category> children = categoryService.gatDescendants(currentId);
             System.out.println("\n- " + current.getName() + " -");
 
             if (!children.isEmpty()) {
@@ -389,7 +390,7 @@ public class Alpha {
                 continue;
             }
 
-            if (categoryService.hasSubcategories(selected.getId())) {
+            if (categoryService.hasDescendants(selected.getId())) {
                 path.push(selected);
             } else {
                 productsDisplayPage(selected);
@@ -777,7 +778,7 @@ public class Alpha {
         }
 
         UUID categoryId = category.getId();
-        if (categoryService.hasSubcategories(categoryId)) {
+        if (categoryService.hasDescendants(categoryId)) {
             System.out.println("Category contains subcategories.");
             waitClick();
             return;

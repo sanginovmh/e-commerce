@@ -7,7 +7,6 @@ import uz.pdp.service.ProductService;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 public final class CartItemRenderer {
     public static String render(Cart cart, ProductService productService) {
         StringBuilder sb = new StringBuilder();
