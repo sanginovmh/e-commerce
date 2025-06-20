@@ -268,7 +268,7 @@ public class Alpha {
             } catch (IOException e) {
                 System.out.println("Error reading file: " + e.getMessage());
                 waitClick();
-            }catch (InvalidCategoryException e){
+            } catch (InvalidCategoryException e) {
                 System.out.println("Category exception: " + e.getMessage());
                 waitClick();
             }
@@ -303,7 +303,7 @@ public class Alpha {
             } catch (IOException e) {
                 System.out.println("Error reading file: " + e.getMessage());
                 waitClick();
-            }catch (InvalidProductException e){
+            } catch (InvalidProductException e) {
                 System.out.println("Product exception: " + e.getMessage());
                 waitClick();
             }
@@ -796,5 +796,4 @@ public class Alpha {
         waitClick();
         initialPage();
     }
-
 }
