@@ -90,7 +90,7 @@ public class CartService implements BaseService<Cart> {
 
     @Override
     public void clearAndSave() throws IOException {
-        carts = new ArrayList<>();
+        carts.clear();
         save();
     }
 
@@ -103,7 +103,7 @@ public class CartService implements BaseService<Cart> {
         return null;
     }
 
-    private boolean isValidCart(Cart cart, ProductService productService) {
+    private boolean isValidCart(Cart cart, ProductService productService) throws IOException {
         if (cart == null
                 || cart.isPaid()
                 || cart.getItems() == null
@@ -123,13 +123,15 @@ public class CartService implements BaseService<Cart> {
         return true;
     }
 
-    private void sanitize(Cart cart, Product product) {
+    private void sanitize(Cart cart, Product product) throws IOException {
         if (product == null
                 || !product.isActive()
                 || product.getQuantity() <= 0) {
             CartItemAbstract cartItemAbstract = new CartItemAbstract(cart);
             cartItemAbstract.removeItemFromCart(product);
             cart.touch();
+
+            save();
         }
     }
 

@@ -1,22 +1,32 @@
 <users>
   <user>
-    <id>71ce6bed-5b43-417d-a974-3f2442c53a63</id>
-    <createdAt>2025-06-25T14:30:31.756Z</createdAt>
-    <updatedAt>2025-06-25T14:30:31.756Z</updatedAt>
+    <id>ba8cf86a-b406-4f57-86b9-0f73711a4902</id>
+    <createdAt>2025-06-25T18:00:39.59</createdAt>
+    <updatedAt>2025-06-25T18:00:39.595Z</updatedAt>
     <active>true</active>
-    <fullName>John Pork</fullName>
-    <username>john</username>
+    <fullName>Abror</fullName>
+    <username>abrik</username>
     <password>123</password>
-    <role>SELLER</role>
+    <role>CUSTOMER</role>
   </user>
   <user>
-    <id>3f47eb12-f01f-4ad8-b698-d10ca3ddcb96</id>
-    <createdAt>2025-06-25T14:33:10.672Z</createdAt>
-    <updatedAt>2025-06-25T14:33:10.672Z</updatedAt>
+    <id>7b8d9980-dcf0-4ab0-b390-f571a69eacfb</id>
+    <createdAt>2025-06-25T18:01:04.16</createdAt>
+    <updatedAt>2025-06-25T18:01:04.161Z</updatedAt>
     <active>true</active>
-    <fullName>Admin</fullName>
-    <username>admin</username>
-    <password>admin</password>
-    <role>ADMIN</role>
+    <fullName>Abror</fullName>
+    <username>abrik11</username>
+    <password>123</password>
+    <role>CUSTOMER</role>
+  </user>
+  <user>
+    <id>6917f262-12a8-461d-a1ca-80f6e3c06b53</id>
+    <createdAt>2025-06-25T18:01:28.44</createdAt>
+    <updatedAt>2025-06-25T18:01:28.442Z</updatedAt>
+    <active>true</active>
+    <fullName>Madina</fullName>
+    <username>madin</username>
+    <password>123</password>
+    <role>CUSTOMER</role>
   </user>
 </users>

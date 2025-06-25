@@ -7,13 +7,14 @@ import uz.pdp.util.FileUtils;
 import uz.pdp.xmlwrapper.UserList;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class UserService implements BaseService<User> {
     private static final String FILE_NAME = "users.xml";
     List<User> users;
+
+    Map<String, User> usersByUsername = new HashMap<>();
+    Map<String, List<User>> usersByFullName = new HashMap<>();
 
     public UserService() {
         try {
@@ -21,6 +22,9 @@ public class UserService implements BaseService<User> {
         } catch (IOException e) {
             users = new ArrayList<>();
         }
+
+        mapUsersByUsername();
+        mapUsersByFullName();
     }
 
     @Override
@@ -70,7 +74,6 @@ public class UserService implements BaseService<User> {
         existing.touch();
 
         save();
-
         return true;
     }
 
@@ -89,7 +92,11 @@ public class UserService implements BaseService<User> {
 
     @Override
     public void clearAndSave() throws IOException {
-        users = new ArrayList<>();
+        users.clear();
+
+        usersByUsername.clear();
+        usersByFullName.clear();
+
         save();
     }
 
@@ -122,12 +129,49 @@ public class UserService implements BaseService<User> {
                 && !username.isBlank();
     }
 
+    public List<User> searchUsersByUsernameOrFullName(String keyword) {
+        List<User> matches = new ArrayList<>();
+
+        User match = usersByUsername.get(keyword);
+        if (match != null) {
+            matches.add(match);
+        }
+
+        List<User> matchesFullName = usersByFullName.get(keyword);
+        if (matchesFullName != null && !matchesFullName.isEmpty()) {
+            matches.addAll(matchesFullName);
+        }
+
+        return matches;
+    }
+
     private void save() throws IOException {
         UserList userList = new UserList(users);
         FileUtils.writeToXml(FILE_NAME, userList);
+
+        mapUsersByUsername();
+        mapUsersByFullName();
     }
 
     private List<User> loadFromFile() throws IOException {
         return FileUtils.readFromXml(FILE_NAME, User.class);
+    }
+
+    private void mapUsersByUsername() {
+        for (User user : users) {
+            if (user.isActive()) {
+                usersByUsername.put(user.getUsername(), user);
+            }
+        }
+    }
+
+    private void mapUsersByFullName() {
+        for (User user : users) {
+            if (user.isActive()) {
+                usersByFullName
+                        .computeIfAbsent(user.getFullName(), k -> new ArrayList<>())
+                        .add(user);
+            }
+        }
     }
 }

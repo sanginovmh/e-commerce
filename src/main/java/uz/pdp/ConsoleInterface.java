@@ -154,7 +154,7 @@ public class ConsoleInterface {
                 case "5" -> browseCategories();
                 case "6" -> createNewAdminPage();
                 case "7" -> searchSuperPage();
-                case "8" -> searchGlobalPage();
+                case "8" -> searchDash();
                 case "9" -> logout();
                 case "10" -> System.exit(0);
 
@@ -182,7 +182,7 @@ public class ConsoleInterface {
                 case "2" -> viewYourProductsPage();
                 case "3" -> removeSellerProductPage();
                 case "4" -> addNewProductPage();
-                case "5" -> searchGlobalPage();
+                case "5" -> searchDash();
                 case "6" -> renameProductPage();
                 case "7" -> logout();
 
@@ -204,7 +204,7 @@ public class ConsoleInterface {
             switch (strScanner.nextLine()) {
                 case "1" -> browseCategories();
                 case "2" -> viewCustomerCartPage();
-                case "3" -> searchGlobalPage();
+                case "3" -> searchDash();
                 case "4" -> logout();
 
                 default -> {
@@ -686,14 +686,29 @@ public class ConsoleInterface {
         System.out.println("\n--- Search Super ---");
         System.out.print("Enter search term: ");
         // String searchTerm = strScanner.nextLine();
-        // TODO implement search functionality
+        // TODO implement search across users, products, and categories all together
     }
 
-    public static void searchGlobalPage() {
-        System.out.println("\n--- Search Global ---");
-        System.out.print("Enter search term: fd");
-        // String searchTerm = strScanner.nextLine();
-        // TODO implement global search functionality
+    public static void searchDash() {
+        // TODO let user choose what to search for (users, products)
+    }
+
+    public static void searchUsers() {
+        System.out.println("\n--- Search Users ---");
+
+        System.out.print("Enter search term: ");
+        String keyword = strScanner.nextLine();
+
+        List<User> usersMatched = userService.searchUsersByUsernameOrFullName(keyword);
+        if (usersMatched.isEmpty()) {
+            System.out.println("[no users found]");
+            waitClick();
+            return;
+        }
+
+        System.out.print(UserRenderer.render(usersMatched));
+
+        // TODO if ADMIN, let interact with chosen user
     }
 
     public static void viewYourProductsPage() {

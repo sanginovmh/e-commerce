@@ -67,7 +67,7 @@ public class OrderService implements BaseService<Order> {
 
     @Override
     public void clearAndSave() throws IOException {
-        orders = new ArrayList<>();
+        orders.clear();
         save();
     }
 
