@@ -1,6 +1,5 @@
 package uz.pdp.renderer;
 
-import lombok.RequiredArgsConstructor;
 import uz.pdp.model.Cart;
 import uz.pdp.model.Product;
 import uz.pdp.service.ProductService;

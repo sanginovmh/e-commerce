@@ -60,6 +60,7 @@ public class CategoryService implements BaseService<Category> {
         if (existing == null || !existing.isActive()) return false;
 
         existing.setName(category.getName());
+        existing.touch();
 
         save();
         return true;
@@ -74,6 +75,7 @@ public class CategoryService implements BaseService<Category> {
         for (Category category : categories) {
             if (toDeactivate.contains(category.getId())) {
                 category.setActive(false);
+                category.touch();
             }
         }
 
@@ -81,12 +83,12 @@ public class CategoryService implements BaseService<Category> {
     }
 
     @Override
-    public void clear() throws IOException {
+    public void clearAndSave() throws IOException {
         categories.clear();
         save();
     }
 
-    public List<Category> gatDescendants(UUID id) {
+    public List<Category> getDescendants(UUID id) {
         List<Category> children = new ArrayList<>();
         for (Category category : categories) {
             if (category.isActive() && category.getParentId().equals(id)) {
@@ -127,7 +129,7 @@ public class CategoryService implements BaseService<Category> {
         return null;
     }
 
-    public void collectDescendants(UUID id, Set<UUID> collected) {
+    private void collectDescendants(UUID id, Set<UUID> collected) {
         for (Category category : categories) {
             if (category.isActive() && category.getId().equals(id)) {
                 collected.add(category.getId());
@@ -151,6 +153,7 @@ public class CategoryService implements BaseService<Category> {
         }
 
         category.setName(newName);
+        category.touch();
 
         save();
     }

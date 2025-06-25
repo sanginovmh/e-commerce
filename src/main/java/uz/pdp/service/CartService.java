@@ -68,6 +68,7 @@ public class CartService implements BaseService<Cart> {
         }
 
         existing.setPaid(cart.isPaid());
+        existing.touch();
 
         save();
 
@@ -82,12 +83,13 @@ public class CartService implements BaseService<Cart> {
         }
 
         existing.setActive(false);
+        existing.touch();
 
         save();
     }
 
     @Override
-    public void clear() throws IOException {
+    public void clearAndSave() throws IOException {
         carts = new ArrayList<>();
         save();
     }
@@ -127,6 +129,7 @@ public class CartService implements BaseService<Cart> {
                 || product.getQuantity() <= 0) {
             CartItemAbstract cartItemAbstract = new CartItemAbstract(cart);
             cartItemAbstract.removeItemFromCart(product);
+            cart.touch();
         }
     }
 
@@ -156,6 +159,7 @@ public class CartService implements BaseService<Cart> {
 
         CartItemAbstract cartItemAbstract = new CartItemAbstract(cart);
         cartItemAbstract.addItemToCart(product, quantity);
+        cart.touch();
 
         save();
     }
@@ -167,6 +171,7 @@ public class CartService implements BaseService<Cart> {
             IOException {
         CartItemAbstract cartItemAbstract = new CartItemAbstract(cart);
         cartItemAbstract.removeItemFromCart(product);
+        cart.touch();
 
         save();
     }

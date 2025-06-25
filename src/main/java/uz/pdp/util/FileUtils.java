@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
 
 import java.io.File;
@@ -14,21 +15,27 @@ import java.util.List;
 
 @RequiredArgsConstructor
 public final class FileUtils {
-    private static final String PATH = "src/main/java/uz/pdp/data/";
+    private static final String PATH = "src/main/java/uz/pdp/dao/";
 
     private static final ObjectMapper objectMapper;
     private static final XmlMapper xmlMapper;
 
-    static {
+    static { 
         objectMapper = JsonMapper.builder()
                 .enable(MapperFeature.PROPAGATE_TRANSIENT_MARKER)
                 .build();
         objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
         xmlMapper = XmlMapper.builder()
                 .enable(MapperFeature.PROPAGATE_TRANSIENT_MARKER)
                 .build();
         xmlMapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+        xmlMapper.registerModule(new JavaTimeModule());
+        xmlMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
     }
 
 

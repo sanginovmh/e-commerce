@@ -1,6 +1,5 @@
 package uz.pdp.renderer;
 
-import lombok.RequiredArgsConstructor;
 import uz.pdp.exception.InvalidCartException;
 import uz.pdp.model.Cart;
 import uz.pdp.model.User;

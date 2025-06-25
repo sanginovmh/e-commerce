@@ -33,6 +33,7 @@ public class ProductService implements BaseService<Product> {
             products.add(product);
         } else {
             existing.setQuantity(product.getQuantity() + existing.getQuantity());
+            existing.touch();
         }
 
         save();
@@ -70,6 +71,7 @@ public class ProductService implements BaseService<Product> {
         existing.setQuantity(product.getQuantity());
         existing.setSellerId(product.getSellerId());
         existing.setCategoryId(product.getCategoryId());
+        existing.touch();
 
         save();
         return true;
@@ -77,17 +79,18 @@ public class ProductService implements BaseService<Product> {
 
     @Override
     public void remove(UUID id) throws IOException {
-        Product found = get(id);
-        if (found != null && found.isActive()) {
-            found.setActive(false);
+        Product existing = get(id);
+        if (existing != null && existing.isActive()) {
+            existing.setActive(false);
+            existing.touch();
 
             save();
         }
     }
 
     @Override
-    public void clear() throws IOException {
-        products = new ArrayList<>();
+    public void clearAndSave() throws IOException {
+        products.clear();
         save();
     }
 
@@ -142,6 +145,7 @@ public class ProductService implements BaseService<Product> {
         }
 
         product.setName(newName);
+        product.touch();
 
         save();
     }
@@ -163,6 +167,7 @@ public class ProductService implements BaseService<Product> {
         if (product.getQuantity() == 0) {
             product.setActive(false);
         }
+        product.touch();
 
         save();
     }

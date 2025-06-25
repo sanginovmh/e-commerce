@@ -18,7 +18,7 @@ import uz.pdp.service.UserService;
 import java.io.IOException;
 import java.util.*;
 
-public class Alpha {
+public class ConsoleInterface {
     static UserService userService = new UserService();
     static CartService cartService = new CartService();
     static ProductService productService = new ProductService();
@@ -361,7 +361,7 @@ public class Alpha {
                 currentId = CategoryService.ROOT_UUID;
             }
 
-            List<Category> children = categoryService.gatDescendants(currentId);
+            List<Category> children = categoryService.getDescendants(currentId);
             System.out.println("\n- " + current.getName() + " -");
 
             if (!children.isEmpty()) {
