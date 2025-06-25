@@ -1,0 +1,22 @@
+<users>
+  <user>
+    <id>71ce6bed-5b43-417d-a974-3f2442c53a63</id>
+    <createdAt>2025-06-25T14:30:31.756Z</createdAt>
+    <updatedAt>2025-06-25T14:30:31.756Z</updatedAt>
+    <active>true</active>
+    <fullName>John Pork</fullName>
+    <username>john</username>
+    <password>123</password>
+    <role>SELLER</role>
+  </user>
+  <user>
+    <id>3f47eb12-f01f-4ad8-b698-d10ca3ddcb96</id>
+    <createdAt>2025-06-25T14:33:10.672Z</createdAt>
+    <updatedAt>2025-06-25T14:33:10.672Z</updatedAt>
+    <active>true</active>
+    <fullName>Admin</fullName>
+    <username>admin</username>
+    <password>admin</password>
+    <role>ADMIN</role>
+  </user>
+</users>

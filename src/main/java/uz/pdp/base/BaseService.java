@@ -42,5 +42,5 @@ public interface BaseService<T> {
      */
     void remove(UUID id) throws IOException;
 
-    void clear() throws IOException;
+    void clearAndSave() throws IOException;
 }

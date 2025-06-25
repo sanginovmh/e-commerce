@@ -67,6 +67,7 @@ public class UserService implements BaseService<User> {
         existing.setUsername(user.getUsername());
         existing.setPassword(user.getPassword());
         existing.setRole(user.getRole());
+        existing.touch();
 
         save();
 
@@ -81,12 +82,13 @@ public class UserService implements BaseService<User> {
         }
 
         existing.setActive(false);
+        existing.touch();
 
         save();
     }
 
     @Override
-    public void clear() throws IOException {
+    public void clearAndSave() throws IOException {
         users = new ArrayList<>();
         save();
     }

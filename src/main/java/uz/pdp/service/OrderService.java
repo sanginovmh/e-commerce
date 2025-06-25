@@ -59,13 +59,14 @@ public class OrderService implements BaseService<Order> {
         Order existing = get(id);
         if (existing != null) {
             existing.setActive(false);
+            existing.touch();
 
             save();
         }
     }
 
     @Override
-    public void clear() throws IOException {
+    public void clearAndSave() throws IOException {
         orders = new ArrayList<>();
         save();
     }

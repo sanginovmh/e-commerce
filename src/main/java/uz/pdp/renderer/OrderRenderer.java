@@ -6,7 +6,6 @@ import uz.pdp.model.Order;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 public final class OrderRenderer {
     public static String render(List<Order> list) {
         StringBuilder sb = new StringBuilder();

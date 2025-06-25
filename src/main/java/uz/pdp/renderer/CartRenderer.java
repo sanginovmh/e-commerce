@@ -1,6 +1,5 @@
 package uz.pdp.renderer;
 
-import lombok.RequiredArgsConstructor;
 import uz.pdp.exception.InvalidCartException;
 import uz.pdp.model.Cart;
 import uz.pdp.model.User;
@@ -12,7 +11,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
-@RequiredArgsConstructor
 public final class CartRenderer {
     public static String adminRender(
             List<Cart> carts,

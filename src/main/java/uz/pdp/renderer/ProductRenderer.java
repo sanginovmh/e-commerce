@@ -5,7 +5,6 @@ import uz.pdp.model.Product;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 public final class ProductRenderer {
     public static String render(List<Product> list) {
         StringBuilder sb = new StringBuilder();
