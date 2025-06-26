@@ -8,6 +8,8 @@ import uz.pdp.xmlwrapper.CategoryList;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class CategoryService implements BaseService<Category> {
     private static final String FILE_NAME = "categories.xml";
@@ -35,23 +37,17 @@ public class CategoryService implements BaseService<Category> {
 
     @Override
     public Category get(UUID id) {
-        for (Category category : categories) {
-            if (category.isActive() && category.getId().equals(id)) {
-                return category;
-            }
-        }
-        return null;
+        return categories.stream()
+                .filter(c -> c.isActive() && c.getId().equals(id))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
     public List<Category> getAll() {
-        List<Category> actives = new ArrayList<>();
-        for (Category category : categories) {
-            if (category.isActive()) {
-                actives.add(category);
-            }
-        }
-        return actives;
+        return categories.stream()
+                .filter(Category::isActive)
+                .toList();
     }
 
     @Override
@@ -116,6 +112,12 @@ public class CategoryService implements BaseService<Category> {
         }
 
         return lastCategories;
+    }
+
+    public List<Category> getCategoriesEmptyOfProducts(Predicate<Category> isEmptyOfProducts) {
+        return categories.stream()
+                .filter(isEmptyOfProducts)
+                .toList();
     }
 
     public Category findByName(String name) {

@@ -1,6 +1,5 @@
 package uz.pdp.renderer;
 
-import lombok.RequiredArgsConstructor;
 import uz.pdp.model.Order.BoughtItem;
 import uz.pdp.model.Order;
 
@@ -17,8 +16,7 @@ public final class OrderRenderer {
     }
 
     public static String render(Order order) {
-        return String.format("%-13s -> %s:\n",
-                order.getSeller().getUsername(),
+        return String.format("%s:\n",
                 order.getCustomer().getUsername()) +
                 renderBoughtItems(order.getBoughtItems()) +
                 String.format("Grand Total: %.2f\n",
@@ -28,7 +26,8 @@ public final class OrderRenderer {
     private static StringBuilder renderBoughtItems(List<BoughtItem> list) {
         StringBuilder sb = new StringBuilder();
         for (BoughtItem item : list) {
-            sb.append(String.format("%-10s $%-7.2f %-4d ->   $%-7.2f\n",
+            sb.append(String.format("%-13s %-10s $%-7.2f %-4d ->   $%-7.2f\n",
+                    item.getSeller().getUsername(),
                     item.getProduct(),
                     item.getPricePerPsc(),
                     item.getAmountBought(),

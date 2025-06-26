@@ -12,7 +12,7 @@ import java.util.UUID;
 
 public class ProductService implements BaseService<Product> {
     private static final String FILE_NAME = "products.json";
-    List<Product> products;
+    private List<Product> products;
 
     public ProductService() {
         try {
@@ -127,13 +127,10 @@ public class ProductService implements BaseService<Product> {
         return null;
     }
 
-    public boolean isCategoryEmpty(UUID categoryId) {
-        for (Product p : products) {
-            if (p.isActive() && p.getCategoryId().equals(categoryId)) {
-                return false;
-            }
-        }
-        return true;
+    public boolean isCategoryEmpty(UUID id) {
+        return products.stream()
+                .filter(Product::isActive)
+                .noneMatch(p -> p.getCategoryId().equals(id));
     }
 
     public void updateProductName(Product product, String newName) throws IOException {

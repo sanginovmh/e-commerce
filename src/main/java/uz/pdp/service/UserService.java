@@ -11,10 +11,10 @@ import java.util.*;
 
 public class UserService implements BaseService<User> {
     private static final String FILE_NAME = "users.xml";
-    List<User> users;
+    private List<User> users;
 
-    Map<String, User> usersByUsername = new HashMap<>();
-    Map<String, List<User>> usersByFullName = new HashMap<>();
+    private final Map<String, User> usersByUsername = new HashMap<>();
+    private final Map<String, List<User>> usersByFullName = new HashMap<>();
 
     public UserService() {
         try {
@@ -32,6 +32,9 @@ public class UserService implements BaseService<User> {
         if (!isUsernameValid(user.getUsername())) {
             throw new InvalidUserException("Username is not valid or already taken.");
         }
+
+        user.setUsername(user.getUsername().toLowerCase(Locale.ENGLISH));
+        user.touch();
 
         users.add(user);
 
@@ -102,25 +105,17 @@ public class UserService implements BaseService<User> {
 
     public User login(String username, String password) {
         String usernameLowerCase = username.toLowerCase();
-        for (User user : users) {
-            if (user.isActive()
-                    && user.getUsername().toLowerCase().equals(usernameLowerCase)
-                    && user.getPassword().equals(password)) {
-                return user;
-            }
+
+        User existing = usersByUsername.get(usernameLowerCase);
+        if (existing != null && existing.isActive() && existing.getPassword().equals(password)) {
+            return existing;
         }
         return null;
     }
 
     public User findByUsername(String username) {
         String usernameLowerCase = username.toLowerCase();
-        for (User user : users) {
-            if (user.isActive()
-                    && user.getUsername().toLowerCase().equals(usernameLowerCase)) {
-                return user;
-            }
-        }
-        return null;
+        return usersByUsername.get(usernameLowerCase);
     }
 
     public boolean isUsernameValid(String username) {
@@ -143,6 +138,13 @@ public class UserService implements BaseService<User> {
         }
 
         return matches;
+    }
+
+    public User getIgnoreActive(UUID id) {
+        return users.stream()
+                .filter(u -> u.getId().equals(id))
+                .findFirst()
+                .orElse(null);
     }
 
     private void save() throws IOException {

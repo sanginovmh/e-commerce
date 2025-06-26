@@ -1,7 +1,17 @@
 package uz.pdp.service;
 
+import uz.pdp.abstraction.OrderBuilder;
 import uz.pdp.base.BaseService;
+import uz.pdp.exception.InvalidOrderException;
+import uz.pdp.model.Cart;
+import uz.pdp.model.Cart.Item;
 import uz.pdp.model.Order;
+import uz.pdp.model.Order.Customer;
+import uz.pdp.model.Order.Seller;
+import uz.pdp.model.Order.BoughtItem;
+import uz.pdp.model.Product;
+import uz.pdp.model.User;
+import uz.pdp.util.CartUtils;
 import uz.pdp.util.FileUtils;
 
 import java.io.IOException;
@@ -71,6 +81,16 @@ public class OrderService implements BaseService<Order> {
         save();
     }
 
+    public Order buildNewOrder(
+            Cart cart,
+            ProductService productService,
+            User user,
+            UserService userService
+    ) throws IOException, InvalidOrderException {
+        OrderBuilder orderBuilder = new OrderBuilder(cart);
+        return orderBuilder.buildNewOrder(productService, user, userService);
+    }
+
     public List<Order> getByCustomerId(UUID id) {
         List<Order> ordersByCustomers = new ArrayList<>();
         for (Order order : orders) {
@@ -81,18 +101,6 @@ public class OrderService implements BaseService<Order> {
         }
 
         return ordersByCustomers;
-    }
-
-    public List<Order> getBySellerId(UUID id) {
-        List<Order> ordersBySellers = new ArrayList<>();
-        for (Order order : orders) {
-            if (order.isActive()
-                    && order.getSeller().getId().equals(id)) {
-                ordersBySellers.add(order);
-            }
-        }
-
-        return ordersBySellers;
     }
 
     public List<Order> filterHigherThan(double amount) {

@@ -1,1 +1,38 @@
-[]
+[ {
+  "id" : "8d3a08ff-50e3-4602-adac-74f52e1cd296",
+  "createdAt" : "2025-06-25T23:46:56.70",
+  "updatedAt" : "2025-06-25T23:46:56.701Z",
+  "active" : true,
+  "cartId" : "d583c327-5068-40ee-853d-becd7ebce948",
+  "customer" : {
+    "id" : "7b51be8d-783a-4990-8b5b-fa1410946f20",
+    "fullName" : "Madina",
+    "username" : "madi"
+  },
+  "boughtItems" : [ {
+    "seller" : {
+      "id" : "883fb074-aa7d-421c-88e0-3b10d1d3b3c3",
+      "fullName" : "Abror Asqarov",
+      "username" : "abrik",
+      "active" : true
+    },
+    "productId" : "a7f74ce4-2bdd-43fd-9c1b-4215c26cb868",
+    "product" : "BMW e",
+    "amountBought" : 3,
+    "pricePerPsc" : 40000.0,
+    "totalPaid" : 120000.0
+  }, {
+    "seller" : {
+      "id" : "5c32a659-acc9-45ff-94d3-6cba331cf25e",
+      "fullName" : "Ozodbe",
+      "username" : "ozodi",
+      "active" : true
+    },
+    "productId" : "668c7ca1-0734-4b76-b4d7-61c42fb05c61",
+    "product" : "iphone 14",
+    "amountBought" : 1,
+    "pricePerPsc" : 900.0,
+    "totalPaid" : 900.0
+  } ],
+  "grandTotal" : 120900.0
+} ]

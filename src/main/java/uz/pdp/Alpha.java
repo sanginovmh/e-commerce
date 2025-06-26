@@ -1,28 +1,25 @@
 package uz.pdp;
 
 import uz.pdp.exception.InvalidCategoryException;
+import uz.pdp.exception.InvalidOrderException;
 import uz.pdp.exception.InvalidProductException;
-import uz.pdp.model.Cart;
-import uz.pdp.model.Category;
-import uz.pdp.model.Product;
-import uz.pdp.model.User;
+import uz.pdp.model.*;
 import uz.pdp.renderer.CartRenderer;
 import uz.pdp.renderer.CategoryRenderer;
 import uz.pdp.renderer.ProductRenderer;
 import uz.pdp.renderer.UserRenderer;
-import uz.pdp.service.CartService;
-import uz.pdp.service.CategoryService;
-import uz.pdp.service.ProductService;
-import uz.pdp.service.UserService;
+import uz.pdp.service.*;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Predicate;
 
-public class ConsoleInterface {
+public class Alpha {
     static UserService userService = new UserService();
     static CartService cartService = new CartService();
     static ProductService productService = new ProductService();
     static CategoryService categoryService = new CategoryService();
+    static OrderService orderService = new OrderService();
 
     static Scanner strScanner = new Scanner(System.in);
     static Scanner numScanner = new Scanner(System.in);
@@ -494,13 +491,12 @@ public class ConsoleInterface {
             return;
         }
 
-        printLastCategories();
+        printCategoriesEmptyOfProducts();
 
         System.out.print("Parent Category (or 'Root'): ");
         String parentName = strScanner.nextLine().toLowerCase();
 
         UUID parentId = CategoryService.ROOT_UUID;
-
 
         if (!parentName.equalsIgnoreCase("root")) {
             Category parent = categoryService.findByName(parentName);
@@ -845,9 +841,26 @@ public class ConsoleInterface {
 
         try {
             cartService.checkoutCart(cart, productService);
+
+            createNewOrder(cart);
+
             System.out.println("Checkout successful! Thank you for your purchase.");
         } catch (Exception e) {
             System.out.println("Checkout failed: " + e.getMessage());
+        }
+        waitClick();
+    }
+
+    public static void createNewOrder(Cart cart) {
+        try {
+            Order order = orderService
+                    .buildNewOrder(cart, productService, currentUser, userService);
+            orderService.add(order);
+            System.out.print("Order created successfully.");
+        } catch (IOException e) {
+            System.out.print("Error reading file: " + e.getMessage());
+        } catch (InvalidOrderException e) {
+            System.out.print("Could not create order: " + e.getMessage());
         }
         waitClick();
     }
@@ -884,6 +897,16 @@ public class ConsoleInterface {
         System.out.println("\n- Available Categories -");
 
         List<Category> categories = categoryService.getLastCategories();
+
+        System.out.println(CategoryRenderer.render(categories));
+    }
+
+    public static void printCategoriesEmptyOfProducts() {
+        System.out.println("\n- Available Categories -");
+
+        Predicate<Category> isEmptyOfProducts = category -> productService.isCategoryEmpty(category.getId());
+        List<Category> categories = categoryService.getCategoriesEmptyOfProducts(isEmptyOfProducts);
+
         System.out.println(CategoryRenderer.render(categories));
     }
 

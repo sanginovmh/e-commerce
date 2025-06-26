@@ -1,32 +1,42 @@
 <users>
   <user>
-    <id>ba8cf86a-b406-4f57-86b9-0f73711a4902</id>
-    <createdAt>2025-06-25T18:00:39.59</createdAt>
-    <updatedAt>2025-06-25T18:00:39.595Z</updatedAt>
-    <active>true</active>
-    <fullName>Abror</fullName>
-    <username>abrik</username>
-    <password>123</password>
-    <role>CUSTOMER</role>
-  </user>
-  <user>
-    <id>7b8d9980-dcf0-4ab0-b390-f571a69eacfb</id>
-    <createdAt>2025-06-25T18:01:04.16</createdAt>
-    <updatedAt>2025-06-25T18:01:04.161Z</updatedAt>
-    <active>true</active>
-    <fullName>Abror</fullName>
-    <username>abrik11</username>
-    <password>123</password>
-    <role>CUSTOMER</role>
-  </user>
-  <user>
     <id>6917f262-12a8-461d-a1ca-80f6e3c06b53</id>
     <createdAt>2025-06-25T18:01:28.44</createdAt>
     <updatedAt>2025-06-25T18:01:28.442Z</updatedAt>
     <active>true</active>
+    <fullName>admin</fullName>
+    <username>admin</username>
+    <password>admin</password>
+    <role>ADMIN</role>
+  </user>
+  <user>
+    <id>883fb074-aa7d-421c-88e0-3b10d1d3b3c3</id>
+    <createdAt>2025-06-25T23:42:01.16</createdAt>
+    <updatedAt>2025-06-25T23:42:01.161Z</updatedAt>
+    <active>true</active>
+    <fullName>Abror Asqarov</fullName>
+    <username>abrik</username>
+    <password>abrik</password>
+    <role>SELLER</role>
+  </user>
+  <user>
+    <id>5c32a659-acc9-45ff-94d3-6cba331cf25e</id>
+    <createdAt>2025-06-25T23:43:59.48</createdAt>
+    <updatedAt>2025-06-25T23:43:59.483Z</updatedAt>
+    <active>true</active>
+    <fullName>Ozodbe</fullName>
+    <username>ozodi</username>
+    <password>ozodi</password>
+    <role>SELLER</role>
+  </user>
+  <user>
+    <id>7b51be8d-783a-4990-8b5b-fa1410946f20</id>
+    <createdAt>2025-06-25T23:45:34.30</createdAt>
+    <updatedAt>2025-06-25T23:45:34.303Z</updatedAt>
+    <active>true</active>
     <fullName>Madina</fullName>
-    <username>madin</username>
-    <password>123</password>
+    <username>madi</username>
+    <password>madi</password>
     <role>CUSTOMER</role>
   </user>
 </users>

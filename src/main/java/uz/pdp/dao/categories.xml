@@ -1,10 +1,34 @@
 <categories>
   <category>
-    <id>b5785b73-ee9b-46ce-ba32-3087b00539c3</id>
-    <createdAt>2025-06-25T14:34:24.962Z</createdAt>
-    <updatedAt>2025-06-25T14:34:24.962Z</updatedAt>
+    <id>9d78e956-4be9-4c9a-9c21-680459ee1313</id>
+    <createdAt>2025-06-25T22:26:54.16</createdAt>
+    <updatedAt>2025-06-25T22:26:54.160Z</updatedAt>
     <active>true</active>
-    <name>Cars</name>
+    <name>Vehicles</name>
     <parentId>00000000-0000-0000-0000-000000000000</parentId>
+  </category>
+  <category>
+    <id>bf94c704-2980-4204-a40e-3974a64c1ab7</id>
+    <createdAt>2025-06-25T22:27:15.27</createdAt>
+    <updatedAt>2025-06-25T22:27:15.276Z</updatedAt>
+    <active>true</active>
+    <name>Devices</name>
+    <parentId>00000000-0000-0000-0000-000000000000</parentId>
+  </category>
+  <category>
+    <id>76a3b1d1-6a0c-4f93-8726-f91731a98ad4</id>
+    <createdAt>2025-06-25T22:27:34.65</createdAt>
+    <updatedAt>2025-06-25T22:27:34.657Z</updatedAt>
+    <active>true</active>
+    <name>Electric</name>
+    <parentId>9d78e956-4be9-4c9a-9c21-680459ee1313</parentId>
+  </category>
+  <category>
+    <id>866e6b58-4b21-453e-a8f6-4f2c17ee6f7f</id>
+    <createdAt>2025-06-25T23:41:03.07</createdAt>
+    <updatedAt>2025-06-25T23:41:03.070Z</updatedAt>
+    <active>true</active>
+    <name>Gas</name>
+    <parentId>9d78e956-4be9-4c9a-9c21-680459ee1313</parentId>
   </category>
 </categories>
