@@ -12,13 +12,10 @@ import java.util.List;
 import java.util.UUID;
 
 public final class CartRenderer {
-    public static String adminRender(
-            List<Cart> carts,
-            UserService userService,
-            ProductService productService) {
+    public static String adminRender(List<Cart> carts, UserService userService, ProductService productService) {
         StringBuilder sb = new StringBuilder();
         for (Cart cart : carts) {
-            if (cart.isActive()) {
+            if (cart != null && cart.isActive()) {
                 UUID customerId = cart.getCustomerId();
                 User customer = userService.get(customerId);
 
@@ -41,7 +38,7 @@ public final class CartRenderer {
         sb.append(CartItemRenderer.render(cart, productService));
         try {
             sb.append(String.format("Total: $%.2f\n",
-                    CartUtils.calculatePrice(cart, productService)));
+                    CartUtils.calculatePrice(cart.getItems(), productService::get)));
         } catch (InvalidCartException | IOException e) {
             sb.append("Error calculating price: ").append(e.getMessage());
         }

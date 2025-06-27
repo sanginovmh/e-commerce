@@ -2,31 +2,28 @@ package uz.pdp.util;
 
 import lombok.RequiredArgsConstructor;
 import uz.pdp.exception.InvalidCartException;
-import uz.pdp.model.Cart;
+import uz.pdp.model.Cart.Item;
 import uz.pdp.model.Product;
-import uz.pdp.service.ProductService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
+import java.util.function.Function;
 
 @RequiredArgsConstructor
 public final class CartUtils {
-    public static double calculatePrice(
-            Cart cart,
-            ProductService productService
-    ) throws InvalidCartException,
-            IOException {
-        double totalPrice = 0.0;
-
-        List<Cart.Item> items = cart.getItems();
-        if (items == null || items.isEmpty()) {
-            throw new InvalidCartException("Cart is empty.");
+    public static double calculatePrice(List<Item> items, Function<UUID, Product> getProductById)
+            throws InvalidCartException, IOException {
+        if (items.isEmpty()) {
+            throw new InvalidCartException("Cannot calculate empty cart.");
         }
 
-        for (Cart.Item item : items) {
-            Product product = productService.get(item.getProductId());
-            if (product == null || !product.isActive()) {
-                throw new InvalidCartException("Product with ID " + item.getProductId() + " is not available.");
+        double totalPrice = 0.0;
+
+        for (Item item : items) {
+            Product product = getProductById.apply(item.getProductId());
+            if (product == null) {
+                throw new InvalidCartException("Product is not available.");
             }
 
             totalPrice += product.getPrice() * item.getQuantity();
