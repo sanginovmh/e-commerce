@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class CategoryService implements BaseService<Category> {
     private static final String FILE_NAME = "categories.xml";
     public static final UUID ROOT_UUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
-    List<Category> categories;
+    private List<Category> categories;
 
     public CategoryService() {
         try {
@@ -38,7 +38,8 @@ public class CategoryService implements BaseService<Category> {
     @Override
     public Category get(UUID id) {
         return categories.stream()
-                .filter(c -> c.isActive() && c.getId().equals(id))
+                .filter(Category::isActive)
+                .filter(c -> c.getId().equals(id))
                 .findFirst()
                 .orElse(null);
     }
@@ -47,7 +48,7 @@ public class CategoryService implements BaseService<Category> {
     public List<Category> getAll() {
         return categories.stream()
                 .filter(Category::isActive)
-                .toList();
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     @Override
@@ -68,12 +69,12 @@ public class CategoryService implements BaseService<Category> {
 
         collectDescendants(id, toDeactivate);
 
-        for (Category category : categories) {
-            if (toDeactivate.contains(category.getId())) {
-                category.setActive(false);
-                category.touch();
-            }
-        }
+        categories.stream()
+                .filter(c -> toDeactivate.contains(c.getId()))
+                .forEach(c -> {
+                    c.setActive(false);
+                    c.touch();
+                });
 
         save();
     }
@@ -85,33 +86,23 @@ public class CategoryService implements BaseService<Category> {
     }
 
     public List<Category> getDescendants(UUID id) {
-        List<Category> children = new ArrayList<>();
-        for (Category category : categories) {
-            if (category.isActive() && category.getParentId().equals(id)) {
-                children.add(category);
-            }
-        }
-
-        return children;
+        return categories.stream()
+                .filter(Category::isActive)
+                .filter(c -> c.getParentId().equals(id))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public List<Category> getLastCategories() {
-        Set<UUID> activeParentIds = new HashSet<>();
+        Set<UUID> parentIds = categories.stream()
+                .filter(Category::isActive)
+                .map(Category::getParentId)
+                .filter(parentId -> !parentId.equals(ROOT_UUID))
+                .collect(Collectors.toSet());
 
-        for (Category category : categories) {
-            if (category.isActive() && !category.getParentId().equals(ROOT_UUID)) {
-                activeParentIds.add(category.getParentId());
-            }
-        }
-
-        List<Category> lastCategories = new ArrayList<>();
-        for (Category category : categories) {
-            if (category.isActive() && !activeParentIds.contains(category.getId())) {
-                lastCategories.add(category);
-            }
-        }
-
-        return lastCategories;
+        return categories.stream()
+                .filter(Category::isActive)
+                .filter(c -> !parentIds.contains(c.getId()))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public List<Category> getCategoriesEmptyOfProducts(Predicate<Category> isEmptyOfProducts) {
@@ -122,28 +113,22 @@ public class CategoryService implements BaseService<Category> {
 
     public Category findByName(String name) {
         String nameLowerCase = name.toLowerCase();
-        for (Category category : categories) {
-            if (category.isActive() && category.getName()
-                    .toLowerCase().equals(nameLowerCase)) {
-                return category;
-            }
-        }
-        return null;
+
+        return categories.stream()
+                .filter(Category::isActive)
+                .filter(c -> c.getName().toLowerCase().equals(nameLowerCase))
+                .findFirst()
+                .orElse(null);
     }
 
     private void collectDescendants(UUID id, Set<UUID> collected) {
-        for (Category category : categories) {
-            if (category.isActive() && category.getId().equals(id)) {
-                collected.add(category.getId());
-            }
-        }
+        if (categories.stream().noneMatch(c -> c.getId().equals(id))) return;
 
-        for (Category category : categories) {
-            if (category.isActive() && collected.contains(category.getParentId())) {
-                collected.add(category.getId());
-                collectDescendants(category.getId(), collected);
-            }
-        }
+        collected.add(id);
+        categories.stream()
+                .filter(Category::isActive)
+                .filter(c -> c.getParentId().equals(id))
+                .forEach(c -> collectDescendants(c.getId(), collected));
     }
 
     public void updateCategoryName(Category category, String newName) throws IOException {
@@ -161,12 +146,9 @@ public class CategoryService implements BaseService<Category> {
     }
 
     public boolean hasDescendants(UUID id) {
-        for (Category category : categories) {
-            if (category.isActive() && category.getParentId().equals(id)) {
-                return true;
-            }
-        }
-        return false;
+        return categories.stream()
+                .filter(Category::isActive)
+                .anyMatch(c -> c.getParentId().equals(id));
     }
 
     private void save() throws IOException {
@@ -178,4 +160,3 @@ public class CategoryService implements BaseService<Category> {
         return FileUtils.readFromXml(FILE_NAME, Category.class);
     }
 }
-

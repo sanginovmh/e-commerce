@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 public class CartService implements BaseService<Cart> {
@@ -40,24 +41,18 @@ public class CartService implements BaseService<Cart> {
 
     @Override
     public Cart get(UUID id) {
-        for (Cart cart : carts) {
-            if (cart.isActive() && cart.getId().equals(id)) {
-                return cart;
-            }
-        }
-        return null;
+        return carts.stream()
+                .filter(Cart::isActive)
+                .filter(c -> c.getId().equals(id))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
     public List<Cart> getAll() {
-        List<Cart> cartList = new ArrayList<>();
-        for (Cart cart : carts) {
-            if (cart.isActive()) {
-                cartList.add(cart);
-            }
-        }
-
-        return cartList;
+        return carts.stream()
+                .filter(Cart::isActive)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     @Override
@@ -95,21 +90,18 @@ public class CartService implements BaseService<Cart> {
     }
 
     public Cart findByCustomerId(UUID id) {
-        for (Cart cart : carts) {
-            if (cart.isActive() && cart.getCustomerId().equals(id)) {
-                return cart;
-            }
-        }
-        return null;
+        return carts.stream()
+                .filter(Cart::isActive)
+                .filter(c -> c.getCustomerId().equals(id))
+                .findFirst()
+                .orElse(null);
     }
 
-    private boolean isValidCart(Cart cart, ProductService productService) throws IOException {
-        if (cart == null
-                || cart.isPaid()
-                || cart.getItems() == null
-                || cart.getItems().isEmpty()) {
+    private boolean isValidCartIfFalseThenSanitize(Cart cart, ProductService productService) throws IOException {
+        if (cart == null || cart.isPaid() || cart.getItems() == null || cart.getItems().isEmpty()) {
             return false;
         }
+
 
         for (Item item : cart.getItems()) {
             Product product = productService.get(item.getProductId());
@@ -124,9 +116,7 @@ public class CartService implements BaseService<Cart> {
     }
 
     private void sanitize(Cart cart, Product product) throws IOException {
-        if (product == null
-                || !product.isActive()
-                || product.getQuantity() <= 0) {
+        if (product == null || !product.isActive() || product.getQuantity() <= 0) {
             CartItemAbstract cartItemAbstract = new CartItemAbstract(cart);
             cartItemAbstract.removeItemFromCart(product);
             cart.touch();
@@ -136,7 +126,7 @@ public class CartService implements BaseService<Cart> {
     }
 
     public void checkoutCart(Cart cart, ProductService productService) throws IOException, InvalidCartItemException {
-        if (!isValidCart(cart, productService)) {
+        if (!isValidCartIfFalseThenSanitize(cart, productService)) {
             throw new InvalidCartItemException("Product is out of stock or quantity is invalid. Item removed from cart.");
         }
 
@@ -147,13 +137,8 @@ public class CartService implements BaseService<Cart> {
         save();
     }
 
-    public void addItemToCart(
-            UUID customerId,
-            Product product,
-            int quantity
-    ) throws InvalidCartException,
-            IllegalArgumentException,
-            IOException {
+    public void addItemToCart(UUID customerId, Product product, int quantity)
+            throws InvalidCartException, IllegalArgumentException, IOException {
         Cart cart = findByCustomerId(customerId);
         if (cart == null) {
             throw new InvalidCartException("Cart not found for given customer ID.");
@@ -166,11 +151,8 @@ public class CartService implements BaseService<Cart> {
         save();
     }
 
-    public void removeItemFromCart(
-            Cart cart,
-            Product product
-    ) throws InvalidCartException,
-            IOException {
+    public void removeItemFromCart(Cart cart, Product product)
+            throws InvalidCartException, IOException {
         CartItemAbstract cartItemAbstract = new CartItemAbstract(cart);
         cartItemAbstract.removeItemFromCart(product);
         cart.touch();

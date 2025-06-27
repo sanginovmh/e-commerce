@@ -12,10 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 public final class CartRenderer {
-    public static String adminRender(
-            List<Cart> carts,
-            UserService userService,
-            ProductService productService) {
+    public static String adminRender(List<Cart> carts, UserService userService, ProductService productService) {
         StringBuilder sb = new StringBuilder();
         for (Cart cart : carts) {
             if (cart.isActive()) {

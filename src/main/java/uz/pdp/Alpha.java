@@ -369,7 +369,7 @@ public class Alpha {
             }
 
             System.out.print("Go to ('.' to go back): ");
-            String input = strScanner.nextLine().toLowerCase();
+            String input = strScanner.nextLine();
 
             if (input.trim().equals(".")) {
                 if (path.size() > 1) {
@@ -405,7 +405,7 @@ public class Alpha {
             return;
         }
 
-        System.out.println(ProductRenderer.render(products));
+        System.out.print(ProductRenderer.render(products));
 
         if (currentUser.getRole() != User.UserRole.CUSTOMER) {
             waitClick();
@@ -710,7 +710,7 @@ public class Alpha {
     public static void viewYourProductsPage() {
         System.out.println("\n--- Your Products ---");
 
-        List<Product> products = productService.getBySeller(currentUser.getId());
+        List<Product> products = productService.getBySellerId(currentUser.getId());
         if (products.isEmpty()) {
             System.out.println("You have no products listed.");
             waitClick();

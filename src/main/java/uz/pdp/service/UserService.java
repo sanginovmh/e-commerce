@@ -8,13 +8,15 @@ import uz.pdp.xmlwrapper.UserList;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class UserService implements BaseService<User> {
     private static final String FILE_NAME = "users.xml";
     private List<User> users;
 
-    private final Map<String, User> usersByUsername = new HashMap<>();
-    private final Map<String, List<User>> usersByFullName = new HashMap<>();
+    private Map<String, User> usersByUsername = new HashMap<>();
+    private Map<String, List<User>> usersByFullName = new HashMap<>();
 
     public UserService() {
         try {
@@ -43,24 +45,17 @@ public class UserService implements BaseService<User> {
 
     @Override
     public User get(UUID id) {
-        for (User user : users) {
-            if (user.isActive() && user.getId().equals(id)) {
-                return user;
-            }
-        }
-        return null;
+        return users.stream()
+                .filter(u -> u.isActive() && u.getId().equals(id))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
     public List<User> getAll() {
-        List<User> activeUsers = new ArrayList<>();
-        for (User user : users) {
-            if (user.isActive()) {
-                activeUsers.add(user);
-            }
-        }
-
-        return activeUsers;
+        return users.stream()
+                .filter(User::isActive)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     @Override
@@ -160,20 +155,17 @@ public class UserService implements BaseService<User> {
     }
 
     private void mapUsersByUsername() {
-        for (User user : users) {
-            if (user.isActive()) {
-                usersByUsername.put(user.getUsername(), user);
-            }
-        }
+        usersByUsername = users.stream()
+                .filter(User::isActive)
+                .collect(Collectors.toMap(
+                        User::getUsername,
+                        Function.identity()
+                ));
     }
 
     private void mapUsersByFullName() {
-        for (User user : users) {
-            if (user.isActive()) {
-                usersByFullName
-                        .computeIfAbsent(user.getFullName(), k -> new ArrayList<>())
-                        .add(user);
-            }
-        }
+        usersByFullName = users.stream()
+                .filter(User::isActive)
+                .collect(Collectors.groupingBy(User::getFullName));
     }
 }

@@ -18,7 +18,8 @@ import java.util.List;
 public final class OrderBuilder {
     private final Cart cart;
 
-    public Order buildNewOrder(ProductService productService, User user, UserService userService) throws IOException, InvalidOrderException {
+    public Order buildNewOrder(ProductService productService, User user, UserService userService)
+            throws IOException, InvalidOrderException {
         Order order = new Order();
 
         order.setCartId(cart.getId());
@@ -62,9 +63,7 @@ public final class OrderBuilder {
         order.setBoughtItems(boughtItems);
     }
 
-    private void buildOrderBoughtItemSeller(
-            Order.BoughtItem boughtItem,
-            User seller) {
+    private void buildOrderBoughtItemSeller(Order.BoughtItem boughtItem, User seller) {
         Order.Seller orderSeller = new Order.Seller();
         orderSeller.setId(seller.getId());
         orderSeller.setFullName(seller.getFullName());

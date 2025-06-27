@@ -1,6 +1,5 @@
 package uz.pdp.renderer;
 
-import lombok.RequiredArgsConstructor;
 import uz.pdp.model.Product;
 
 import java.util.List;

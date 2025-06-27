@@ -6,13 +6,16 @@ import uz.pdp.model.Product;
 import uz.pdp.util.FileUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ProductService implements BaseService<Product> {
     private static final String FILE_NAME = "products.json";
     private List<Product> products;
+
+    private Map<UUID, Product> productsById = new HashMap<>();
+    private Map<UUID, List<Product>> productsByCategoryId = new HashMap<>();
 
     public ProductService() {
         try {
@@ -20,6 +23,9 @@ public class ProductService implements BaseService<Product> {
         } catch (IOException e) {
             products = new ArrayList<>();
         }
+
+        mapProductsById();
+        mapProductsByCategoryId();
     }
 
     @Override
@@ -41,24 +47,14 @@ public class ProductService implements BaseService<Product> {
 
     @Override
     public Product get(UUID id) {
-        for (Product product : products) {
-            if (product.isActive() && product.getId().equals(id)) {
-                return product;
-            }
-        }
-        return null;
+        return productsById.get(id);
     }
 
     @Override
     public List<Product> getAll() {
-        List<Product> productList = new ArrayList<>();
-        for (Product product : products) {
-            if (product.isActive()) {
-                productList.add(product);
-            }
-        }
-
-        return productList;
+        return products.stream()
+                .filter(Product::isActive)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     @Override
@@ -91,40 +87,30 @@ public class ProductService implements BaseService<Product> {
     @Override
     public void clearAndSave() throws IOException {
         products.clear();
+
+        productsById.clear();
+        productsByCategoryId.clear();
+
         save();
     }
 
-    public List<Product> getByCategoryId(UUID categoryId) {
-        List<Product> categoryProducts = new ArrayList<>();
-        for (Product product : products) {
-            if (product.isActive() && product.getCategoryId().equals(categoryId)) {
-                categoryProducts.add(product);
-            }
-        }
-
-        return categoryProducts;
+    public List<Product> getByCategoryId(UUID id) {
+        return productsByCategoryId.get(id);
     }
 
-    public List<Product> getBySeller(UUID sellerId) {
-        List<Product> sellerProducts = new ArrayList<>();
-        for (Product product : products) {
-            if (product.isActive() && product.getSellerId().equals(sellerId)) {
-                sellerProducts.add(product);
-            }
-        }
-
-        return sellerProducts;
+    public List<Product> getBySellerId(UUID id) {
+        return products.stream()
+                .filter(p -> p.isActive() && p.getSellerId().equals(id))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public Product findByName(String name) {
         String nameLowerCase = name.toLowerCase();
-        for (Product product : products) {
-            if (product.isActive() && product.getName()
-                    .toLowerCase().equals(nameLowerCase)) {
-                return product;
-            }
-        }
-        return null;
+
+        return products.stream()
+                .filter(p -> p.isActive() && p.getName().equals(nameLowerCase))
+                .findFirst()
+                .orElse(null);
     }
 
     public boolean isCategoryEmpty(UUID id) {
@@ -147,7 +133,8 @@ public class ProductService implements BaseService<Product> {
         save();
     }
 
-    public void purchaseProducts(UUID productId, int quantity) throws IOException, InvalidProductException {
+    public void purchaseProducts(UUID productId, int quantity)
+            throws IOException, InvalidProductException {
         Product product = get(productId);
         if (product == null || !product.isActive()) {
             throw new InvalidProductException("Product not found or inactive.");
@@ -175,5 +162,20 @@ public class ProductService implements BaseService<Product> {
 
     private List<Product> loadFromFile() throws IOException {
         return FileUtils.readFromJson(FILE_NAME, Product.class);
+    }
+
+    private void mapProductsById() {
+        productsById = products.stream()
+                .filter(Product::isActive)
+                .collect(Collectors.toMap(
+                        Product::getId,
+                        Function.identity()
+                ));
+    }
+
+    private void mapProductsByCategoryId() {
+        productsByCategoryId = products.stream()
+                .filter(Product::isActive)
+                .collect(Collectors.groupingBy(Product::getCategoryId));
     }
 }
