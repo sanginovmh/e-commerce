@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.function.Predicate;
 
-public class Alpha {
+public class ConsoleInterface {
     static UserService userService = new UserService();
     static CartService cartService = new CartService();
     static ProductService productService = new ProductService();
