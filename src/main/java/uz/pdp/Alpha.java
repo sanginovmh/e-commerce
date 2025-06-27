@@ -869,7 +869,13 @@ public class Alpha {
         }
 
         try {
-            cartService.checkoutCart(cart, productService);
+            if (cartService.isInvalidAndSanitizeIfTrue(cart, productService::get)) {
+                System.out.println("Product is out of stock or quantity is invalid. Item removed from cart.");
+                waitClick();
+                return;
+            }
+
+            cartService.checkoutCart(cart, productService::purchaseProducts);
 
             createNewOrder(cart);
 

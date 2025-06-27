@@ -4,6 +4,7 @@ import uz.pdp.abstraction.CartItemAbstract;
 import uz.pdp.base.BaseService;
 import uz.pdp.exception.InvalidCartException;
 import uz.pdp.exception.InvalidCartItemException;
+import uz.pdp.function.CheckedBiConsumer;
 import uz.pdp.model.Cart;
 import uz.pdp.model.Product;
 import uz.pdp.util.FileUtils;
@@ -13,6 +14,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 
@@ -97,22 +100,21 @@ public class CartService implements BaseService<Cart> {
                 .orElse(null);
     }
 
-    private boolean isValidCartIfFalseThenSanitize(Cart cart, ProductService productService) throws IOException {
+    public boolean isInvalidAndSanitizeIfTrue(Cart cart, Function<UUID, Product> getProductById) throws IOException {
         if (cart == null || cart.isPaid() || cart.getItems() == null || cart.getItems().isEmpty()) {
-            return false;
+            return true;
         }
 
-
         for (Item item : cart.getItems()) {
-            Product product = productService.get(item.getProductId());
+            Product product = getProductById.apply(item.getProductId());
             if (item.getQuantity() > product.getQuantity()) {
                 sanitize(cart, product);
 
-                return false;
+                return true;
             }
         }
 
-        return true;
+        return false;
     }
 
     private void sanitize(Cart cart, Product product) throws IOException {
@@ -125,13 +127,10 @@ public class CartService implements BaseService<Cart> {
         }
     }
 
-    public void checkoutCart(Cart cart, ProductService productService) throws IOException, InvalidCartItemException {
-        if (!isValidCartIfFalseThenSanitize(cart, productService)) {
-            throw new InvalidCartItemException("Product is out of stock or quantity is invalid. Item removed from cart.");
-        }
-
+    public void checkoutCart(Cart cart, CheckedBiConsumer<UUID, Integer> purchaseProductsByItemInfo)
+            throws IOException, InvalidCartItemException {
         CartItemAbstract cartItemAbstract = new CartItemAbstract(cart);
-        cartItemAbstract.buyItemsInCart(productService);
+        cartItemAbstract.buyItemsInCart(purchaseProductsByItemInfo);
         remove(cart.getId());
 
         save();
