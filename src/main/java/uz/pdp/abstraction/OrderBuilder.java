@@ -3,81 +3,94 @@ package uz.pdp.abstraction;
 import lombok.RequiredArgsConstructor;
 import uz.pdp.exception.InvalidOrderException;
 import uz.pdp.model.Cart;
+import uz.pdp.model.Cart.Item;
 import uz.pdp.model.Order;
+import uz.pdp.model.Order.BoughtItem;
+import uz.pdp.model.Order.Customer;
+import uz.pdp.model.Order.Seller;
 import uz.pdp.model.Product;
 import uz.pdp.model.User;
-import uz.pdp.service.ProductService;
-import uz.pdp.service.UserService;
+import uz.pdp.model.User.UserInfo;
 import uz.pdp.util.CartUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.function.Function;
 
 @RequiredArgsConstructor
 public final class OrderBuilder {
     private final Cart cart;
 
-    public Order buildNewOrder(ProductService productService, User user, UserService userService)
-            throws IOException, InvalidOrderException {
+    public Order buildNewOrder(
+            UserInfo userInfo,
+            Function<UUID, User> getIgnoreActiveSellerById,
+            Function<UUID, Product> getProductById
+    ) throws IOException, InvalidOrderException {
         Order order = new Order();
 
         order.setCartId(cart.getId());
-        buildOrderCustomer(order, user);
-        buildOrderBoughtItems(order, productService, userService);
-        order.setGrandTotal(CartUtils.calculatePrice(cart, productService));
+        order.setCustomer(buildOrderCustomer(userInfo));
+        order.setBoughtItems(buildOrderBoughtItems(getProductById, getIgnoreActiveSellerById));
+        order.setGrandTotal(CartUtils.calculatePrice(cart.getItems(), getProductById));
 
         return order;
     }
 
-    private void buildOrderCustomer(Order order, User user) {
-        Order.Customer customer = new Order.Customer();
+    private Customer buildOrderCustomer(UserInfo userInfo) {
+        Customer customer = new Customer();
 
-        customer.setId(user.getId());
-        customer.setFullName(user.getFullName());
-        customer.setUsername(user.getUsername());
+        customer.setId(userInfo.id());
+        customer.setFullName(userInfo.fullName());
+        customer.setUsername(userInfo.username());
 
-        order.setCustomer(customer);
+        return customer;
     }
 
-    private void buildOrderBoughtItems(Order order, ProductService productService, UserService userService)
-        throws InvalidOrderException {
-        List<Cart.Item> items = cart.getItems();
+    private List<BoughtItem> buildOrderBoughtItems(
+            Function<UUID, Product> getProductById,
+            Function<UUID, User> getIgnoreActiveSellerById
+    ) throws InvalidOrderException {
+        List<Item> items = cart.getItems();
         if (items.isEmpty()) {
-            throw new InvalidOrderException("Cannot create order because cart has no items.");
+            throw new InvalidOrderException("Cannot create order from an empty cart.");
         }
 
-        List<Order.BoughtItem> boughtItems = new ArrayList<>();
-        for (Cart.Item item : items) {
-            Order.BoughtItem boughtItem = new Order.BoughtItem();
+        List<BoughtItem> boughtItems = new ArrayList<>();
 
-            Product product = productService.get(item.getProductId());
-            User seller = userService.getIgnoreActive(product.getSellerId());
+        items.forEach(i -> {
+            Product product = getProductById.apply(i.getProductId());
+            User userSeller = getIgnoreActiveSellerById.apply(product.getSellerId());
 
-            buildOrderBoughtItemSeller(boughtItem, seller);
-            buildOrderBoughtItem(boughtItem, product, item);
+            BoughtItem boughtItem = buildBoughtItem(product, i.getQuantity());
+            boughtItem.setSeller(buildBoughtItemSeller(userSeller));
 
             boughtItems.add(boughtItem);
-        }
+        });
 
-        order.setBoughtItems(boughtItems);
+        return boughtItems;
     }
 
-    private void buildOrderBoughtItemSeller(Order.BoughtItem boughtItem, User seller) {
-        Order.Seller orderSeller = new Order.Seller();
-        orderSeller.setId(seller.getId());
-        orderSeller.setFullName(seller.getFullName());
-        orderSeller.setUsername(seller.getUsername());
-        orderSeller.setActive(seller.isActive());
+    private Seller buildBoughtItemSeller(User userSeller) {
+        Seller orderSeller = new Seller();
+        orderSeller.setId(userSeller.getId());
+        orderSeller.setFullName(userSeller.getFullName());
+        orderSeller.setUsername(userSeller.getUsername());
+        orderSeller.setActive(userSeller.isActive());
 
-        boughtItem.setSeller(orderSeller);
+        return orderSeller;
     }
 
-    private void buildOrderBoughtItem(Order.BoughtItem boughtItem, Product product, Cart.Item item) {
+    private BoughtItem buildBoughtItem(Product product, int itemQuantity) {
+        BoughtItem boughtItem = new BoughtItem();
+
         boughtItem.setProductId(product.getId());
         boughtItem.setProduct(product.getName());
-        boughtItem.setAmountBought(item.getQuantity());
+        boughtItem.setAmountBought(itemQuantity);
         boughtItem.setPricePerPsc(product.getPrice());
-        boughtItem.setTotalPaid(product.getPrice() * item.getQuantity());
+        boughtItem.setTotalPaid(product.getPrice() * itemQuantity);
+
+        return boughtItem;
     }
 }

@@ -5,13 +5,16 @@ import uz.pdp.base.BaseService;
 import uz.pdp.exception.InvalidOrderException;
 import uz.pdp.model.Cart;
 import uz.pdp.model.Order;
+import uz.pdp.model.Product;
 import uz.pdp.model.User;
+import uz.pdp.model.User.UserInfo;
 import uz.pdp.util.FileUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -50,7 +53,7 @@ public class OrderService implements BaseService<Order> {
     }
 
     @Override
-    public boolean update(UUID id, Order order) throws IOException {
+    public boolean update(UUID id, Order order) {
         return false;
     }
 
@@ -71,10 +74,16 @@ public class OrderService implements BaseService<Order> {
         save();
     }
 
-    public Order buildNewOrder(Cart cart, ProductService productService, User user, UserService userService)
-            throws IOException, InvalidOrderException {
+    public Order buildNewOrder(
+            Cart cart, User user,
+            Function<UUID, User> getIgnoreActiveSellerById,
+            Function<UUID, Product> getProductById
+    ) throws IOException, InvalidOrderException {
         OrderBuilder orderBuilder = new OrderBuilder(cart);
-        return orderBuilder.buildNewOrder(productService, user, userService);
+        return orderBuilder.buildNewOrder(
+                new UserInfo(user.getId(), user.getUsername(), user.getFullName()),
+                getIgnoreActiveSellerById,
+                getProductById);
     }
 
     public List<Order> getByCustomerId(UUID id) {

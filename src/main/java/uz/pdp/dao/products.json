@@ -1,21 +1,21 @@
 [ {
   "id" : "a7f74ce4-2bdd-43fd-9c1b-4215c26cb868",
   "createdAt" : "2025-06-25T23:42:41.58",
-  "updatedAt" : "2025-06-25T23:46:56.694Z",
+  "updatedAt" : "2025-06-27T17:37:18.123Z",
   "active" : true,
   "name" : "BMW e",
   "price" : 40000.0,
-  "quantity" : 1,
+  "quantity" : 4,
   "categoryId" : "76a3b1d1-6a0c-4f93-8726-f91731a98ad4",
   "sellerId" : "883fb074-aa7d-421c-88e0-3b10d1d3b3c3"
 }, {
   "id" : "668c7ca1-0734-4b76-b4d7-61c42fb05c61",
   "createdAt" : "2025-06-25T23:44:51.49",
-  "updatedAt" : "2025-06-25T23:46:56.697Z",
+  "updatedAt" : "2025-06-27T17:37:18.135Z",
   "active" : true,
   "name" : "iphone 14",
   "price" : 900.0,
-  "quantity" : 1,
+  "quantity" : 90,
   "categoryId" : "bf94c704-2980-4204-a40e-3974a64c1ab7",
   "sellerId" : "5c32a659-acc9-45ff-94d3-6cba331cf25e"
 } ]

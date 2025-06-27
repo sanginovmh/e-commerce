@@ -8,6 +8,7 @@ import uz.pdp.util.FileUtils;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class ProductService implements BaseService<Product> {
@@ -105,10 +106,11 @@ public class ProductService implements BaseService<Product> {
     }
 
     public Product findByName(String name) {
-        String nameLowerCase = name.toLowerCase();
+        Predicate<Product> matchesName = p -> p.getName().equalsIgnoreCase(name);
 
         return products.stream()
-                .filter(p -> p.isActive() && p.getName().equals(nameLowerCase))
+                .filter(Product::isActive)
+                .filter(matchesName)
                 .findFirst()
                 .orElse(null);
     }

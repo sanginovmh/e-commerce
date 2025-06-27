@@ -4,10 +4,7 @@ import uz.pdp.exception.InvalidCategoryException;
 import uz.pdp.exception.InvalidOrderException;
 import uz.pdp.exception.InvalidProductException;
 import uz.pdp.model.*;
-import uz.pdp.renderer.CartRenderer;
-import uz.pdp.renderer.CategoryRenderer;
-import uz.pdp.renderer.ProductRenderer;
-import uz.pdp.renderer.UserRenderer;
+import uz.pdp.renderer.*;
 import uz.pdp.service.*;
 
 import java.io.IOException;
@@ -137,9 +134,10 @@ public class Alpha {
                     
                     7. Search Super
                     8. Search Global
+                    9. View Orders
                     
-                    9. Logout
-                    10. Exit
+                    10. Logout
+                    0. Exit
                     
                     input %\s""");
 
@@ -152,8 +150,9 @@ public class Alpha {
                 case "6" -> createNewAdminPage();
                 case "7" -> searchSuperPage();
                 case "8" -> searchDash();
-                case "9" -> logout();
-                case "10" -> System.exit(0);
+                case "9" -> viewAllOrders();
+                case "10" -> logout();
+                case "0" -> System.exit(0);
 
                 default -> {
                     System.out.println("Invalid input, try again!");
@@ -192,17 +191,19 @@ public class Alpha {
             System.out.print("""
                     \n--- Customer Dashboard ---
                     1. Browse
-                    2. View Cart
-                    3. Search Global
+                    2. View Your Cart
+                    3. View Previous Orders
+                    4. Search Global
                     
-                    4. Logout
+                    5. Logout
                     
                     input %\s""");
             switch (strScanner.nextLine()) {
                 case "1" -> browseCategories();
                 case "2" -> viewCustomerCartPage();
-                case "3" -> searchDash();
-                case "4" -> logout();
+                case "3" -> viewCustomerOrdersPage();
+                case "4" -> searchDash();
+                case "5" -> logout();
 
                 default -> {
                     System.out.println("Invalid input, try again!");
@@ -399,8 +400,8 @@ public class Alpha {
         System.out.println("\n- " + current.getName() + " -");
 
         List<Product> products = productService.getByCategoryId(current.getId());
-        if (products.isEmpty()) {
-            System.out.println("[no products yet]");
+        if (products == null || products.isEmpty()) {
+            System.out.print("[no products yet]");
             waitClick();
             return;
         }
@@ -707,6 +708,34 @@ public class Alpha {
         // TODO if ADMIN, let interact with chosen user
     }
 
+    public static void viewAllOrders() {
+        System.out.println("\n--- All Orders ---");
+
+        List<Order> orders = orderService.getAll();
+        if (orders.isEmpty()) {
+            System.out.println("[no orders yet]");
+            waitClick();
+            return;
+        }
+
+        System.out.println(OrderRenderer.render(orders));
+        waitClick();
+    }
+
+    public static void viewCustomerOrdersPage() {
+        System.out.println("\n--- Previous Orders ---");
+
+        List<Order> orders = orderService.getByCustomerId(currentUser.getId());
+        if (orders.isEmpty()) {
+            System.out.println("[no orders yet]");
+            waitClick();
+            return;
+        }
+
+        System.out.println(OrderRenderer.render(orders));
+        waitClick();
+    }
+
     public static void viewYourProductsPage() {
         System.out.println("\n--- Your Products ---");
 
@@ -853,8 +882,13 @@ public class Alpha {
 
     public static void createNewOrder(Cart cart) {
         try {
-            Order order = orderService
-                    .buildNewOrder(cart, productService, currentUser, userService);
+            Order order = orderService.buildNewOrder(
+                    cart,
+                    currentUser,
+                    userService::getIgnoreActive,
+                    productService::get
+            );
+
             orderService.add(order);
             System.out.print("Order created successfully.");
         } catch (IOException e) {
