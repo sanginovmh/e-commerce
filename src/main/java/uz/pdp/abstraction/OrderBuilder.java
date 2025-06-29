@@ -10,9 +10,8 @@ import uz.pdp.model.Order.Customer;
 import uz.pdp.model.Order.Seller;
 import uz.pdp.model.Product;
 import uz.pdp.model.User;
-import uz.pdp.model.User.UserInfo;
+import uz.pdp.record.UserInfo;
 import uz.pdp.util.CartUtils;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,9 +40,9 @@ public final class OrderBuilder {
     private Customer buildOrderCustomer(UserInfo userInfo) {
         Customer customer = new Customer();
 
-        customer.setId(userInfo.id());
-        customer.setFullName(userInfo.fullName());
-        customer.setUsername(userInfo.username());
+        customer.setId(userInfo.getId());
+        customer.setFullName(userInfo.getFullName());
+        customer.setUsername(userInfo.getUsername());
 
         return customer;
     }
