@@ -438,16 +438,18 @@ public class ConsoleInterface {
         System.out.println("\n--- Product Menu ---");
 
         System.out.println(ProductRenderer.render(product));
-        System.out.print("""
-                1. Add to Cart
-                
-                2. Back to Categories
-                3. Back to Dashboard
-                input %\s""");
+        System.out.println ("     1. Add Cart ");
+        System.out.println ("     2. Back to Categories ");
+        System.out.println ("     3. Back to Dashboard ");
+
 
         switch (strScanner.nextLine()) {
-            case "1" -> addToCartPage(product);
-            case "3" -> dashboardPage();
+            case "1" :
+                addToCartPage(product);
+                break;
+            case "3" :
+                dashboardPage();
+                break;
         }
     }
 
@@ -549,20 +551,23 @@ public class ConsoleInterface {
     }
 
     public static void manageProductsPage() {
-        System.out.print("""
-                \n--- Manage Products ---
-                1. View All Products
-                2. Remove Product
-                input %\s""");
+        System.out.println("\n---- Manage Products ----");
+        System.out.println("       1.View All Products ");
+        System.out.println("       2.Remove Product ");
+
 
         switch (strScanner.nextLine()) {
-            case "1" -> displayAllProducts();
-            case "2" -> removeProductPage();
+            case "1" :
+                displayAllProducts();
+                break;
+            case "2" :
+                removeProductPage();
+                break;
 
-            default -> {
+            default :
                 System.out.println("Invalid input, try again!");
                 waitClick();
-            }
+
         }
     }
 
@@ -603,21 +608,24 @@ public class ConsoleInterface {
     }
 
     public static void manageCartsPage() {
-        System.out.print("""
-                \n--- Manage Carts ---
-                1. View All Carts
-                2. Remove Cart
-                input %\s""");
+        System.out.println("\n---- Manage Carts ----");
+        System.out.println("      1. View All Carts ");
+        System.out.println("      2. Remove Cart ");
+
 
         switch (strScanner.nextLine()) {
-            case "1" -> viewAllCarts();
-            case "2" -> removeCartPage();
+            case "1" :
+                viewAllCarts();
+                break;
+            case "2" :
+                removeCartPage();
+                break;
 
-            default -> {
+            default :
                 System.out.println("Invalid input, try again!");
                 waitClick();
                 manageCartsPage();
-            }
+
         }
     }
 
@@ -846,16 +854,17 @@ public class ConsoleInterface {
 
         System.out.println(CartRenderer.render(cart, productService));
 
-        System.out.print("""
-                1. Checkout
-                2. Remove Item
-                
-                3. Dashboard
-                input %\s""");
+        System.out.println(" 1. Checkout ");
+        System.out.println(" 2. Remove Item ");
+        System.out.println(" 3. Dashboard ");
 
         switch (strScanner.nextLine()) {
-            case "1" -> checkoutCartPage(cart);
-            case "2" -> removeCartItemPage(cart);
+            case "1" :
+                checkoutCartPage(cart);
+                break;
+            case "2" :
+                removeCartItemPage(cart);
+                break;
         }
     }
 
