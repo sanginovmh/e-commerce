@@ -1,2 +1,18 @@
 <categories>
+  <category>
+    <id>2fd49dad-bb75-4a3f-bd1c-43385239adbd</id>
+    <createdAt>2025-06-29T13:45:26.93</createdAt>
+    <updatedAt>2025-06-29T13:45:26.938Z</updatedAt>
+    <active>true</active>
+    <name>Machine</name>
+    <parentId>00000000-0000-0000-0000-000000000000</parentId>
+  </category>
+  <category>
+    <id>7714511f-8c54-4059-87fa-06a2f264850e</id>
+    <createdAt>2025-06-29T13:46:42.25</createdAt>
+    <updatedAt>2025-06-29T13:46:42.255Z</updatedAt>
+    <active>true</active>
+    <name>cars</name>
+    <parentId>2fd49dad-bb75-4a3f-bd1c-43385239adbd</parentId>
+  </category>
 </categories>

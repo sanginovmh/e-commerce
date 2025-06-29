@@ -145,7 +145,7 @@ public class ConsoleInterface {
             System.out.println("10. Logout");
             System.out.println("0. Exit\n\n");
 
-            System.out.println("input % ");
+            System.out.print("input % ");
 
             switch (strScanner.nextLine()) {
                 case "1":

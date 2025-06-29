@@ -1,2 +1,22 @@
 <users>
+  <user>
+    <id>b7259154-6b30-4183-b0e4-8a64edcc4318</id>
+    <createdAt>2025-06-29T13:29:31.24</createdAt>
+    <updatedAt>2025-06-29T13:29:31.419Z</updatedAt>
+    <active>true</active>
+    <fullName>Muzaffar Xomitaliyev</fullName>
+    <username>muzaffar</username>
+    <password>0506</password>
+    <role>SELLER</role>
+  </user>
+  <user>
+    <id>49bc13c3-8aa7-43ad-84e8-f78f9140148d</id>
+    <createdAt>2025-06-29T13:37:42.49</createdAt>
+    <updatedAt>2025-06-29T13:37:43.530Z</updatedAt>
+    <active>true</active>
+    <fullName>Boss</fullName>
+    <username>admin</username>
+    <password>admin</password>
+    <role>ADMIN</role>
+  </user>
 </users>
