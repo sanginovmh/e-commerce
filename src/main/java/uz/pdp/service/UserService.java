@@ -116,7 +116,7 @@ public class UserService implements BaseService<User> {
     public boolean isUsernameValid(String username) {
         return username.matches("^[a-zA-Z0-9._-]{3,12}$")
                 && findByUsername(username) == null
-                && !username.isBlank();
+                && !username.trim().isEmpty();
     }
 
     public List<User> searchUsersByUsernameOrFullName(String keyword) {
