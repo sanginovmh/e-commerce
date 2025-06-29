@@ -8,103 +8,109 @@ import uz.pdp.xmlwrapper.UserList;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class UserService implements BaseService<User> {
     private static final String FILE_NAME = "users.xml";
-    Map<UUID, User> usersByUuid;
+    private List<User> users;
+
+    private Map<String, User> usersByUsername = new HashMap<>();
+    private Map<String, List<User>> usersByFullName = new HashMap<>();
 
     public UserService() {
         try {
-            usersByUuid = loadFromFile();
+            users = loadFromFile();
         } catch (IOException e) {
-            usersByUuid = new HashMap<>();
+            users = new ArrayList<>();
         }
+
+        mapUsersByUsername();
+        mapUsersByFullName();
     }
 
     @Override
     public void add(User user) throws IOException, InvalidUserException {
-        if (isUsernameValid(user.getUsername())) {
-            usersByUuid.put(user.getId(),user);
-
-            save();
-        } else {
+        if (!isUsernameValid(user.getUsername())) {
             throw new InvalidUserException("Username is not valid or already taken.");
         }
+
+        user.setUsername(user.getUsername().toLowerCase(Locale.ENGLISH));
+        user.touch();
+
+        users.add(user);
+
+        save();
     }
 
     @Override
     public User get(UUID id) {
-        for (User user : usersByUuid.values())
-            if (user.isActive() && user.getId().equals(id)) {
-                return user;
-            }
-        return null;
+        return users.stream()
+                .filter(u -> u.isActive() && u.getId().equals(id))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
     public List<User> getAll() {
-        List<User> activeUsers = new ArrayList<>();
-        for (User user : usersByUuid.values()) {
-            if (user.isActive()) {
-                activeUsers.add(user);
-            }
-        }
-
-        return activeUsers;
+        return users.stream()
+                .filter(User::isActive)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     @Override
     public boolean update(UUID id, User user) throws IOException {
-        User found = get(id);
-        if (found != null) {
-            found.setFullName(user.getFullName());
-            found.setUsername(user.getUsername());
-            found.setPassword(user.getPassword());
-            found.setRole(user.getRole());
-
-            save();
-            return true;
+        User existing = get(id);
+        if (existing == null) {
+            return false;
         }
+
+        existing.setFullName(user.getFullName());
+        existing.setUsername(user.getUsername());
+        existing.setPassword(user.getPassword());
+        existing.setRole(user.getRole());
+        existing.touch();
+
+        save();
         return true;
     }
 
     @Override
     public void remove(UUID id) throws IOException {
-        User found = get(id);
-        if (found != null) {
-            found.setActive(false);
-
-            save();
+        User existing = get(id);
+        if (existing == null) {
+            return;
         }
+
+        existing.setActive(false);
+        existing.touch();
+
+        save();
     }
 
     @Override
-    public void clear() throws IOException {
-        usersByUuid = new HashMap<>();
+    public void clearAndSave() throws IOException {
+        users.clear();
+
+        usersByUsername.clear();
+        usersByFullName.clear();
+
         save();
     }
 
     public User login(String username, String password) {
         String usernameLowerCase = username.toLowerCase();
-        for (User user : usersByUuid.values()) {
-            if (user.isActive()
-                    && user.getUsername().toLowerCase().equals(usernameLowerCase)
-                    && user.getPassword().equals(password)) {
-                return user;
-            }
+
+        User existing = usersByUsername.get(usernameLowerCase);
+        if (existing != null && existing.isActive() && existing.getPassword().equals(password)) {
+            return existing;
         }
         return null;
     }
 
     public User findByUsername(String username) {
         String usernameLowerCase = username.toLowerCase();
-        for (User user : usersByUuid.values()) {
-            if (user.isActive()
-                    && user.getUsername().toLowerCase().equals(usernameLowerCase)) {
-                return user;
-            }
-        }
-        return null;
+        return usersByUsername.get(usernameLowerCase);
     }
 
     public boolean isUsernameValid(String username) {
@@ -113,23 +119,53 @@ public class UserService implements BaseService<User> {
                 && !username.isBlank();
     }
 
-    private void save() throws IOException {
-        UserList userList = new UserList((List<User>) usersByUuid.values());
-        FileUtils.writeToXml(FILE_NAME, userList);
-    }
+    public List<User> searchUsersByUsernameOrFullName(String keyword) {
+        List<User> matches = new ArrayList<>();
 
-    private Map<UUID, User> loadFromFile() throws IOException {
-
-        Map<UUID, User> usersMap = new HashMap<>();
-        List<User> users = FileUtils.readFromXml(FILE_NAME, User.class);
-
-        if (users != null) {
-            for (User user : users) {
-                usersMap.put(user.getId(), user);
-            }
+        User match = usersByUsername.get(keyword);
+        if (match != null) {
+            matches.add(match);
         }
 
-        return usersMap;
+        List<User> matchesFullName = usersByFullName.get(keyword);
+        if (matchesFullName != null && !matchesFullName.isEmpty()) {
+            matches.addAll(matchesFullName);
+        }
 
+        return matches;
+    }
+
+    public User getIgnoreActive(UUID id) {
+        return users.stream()
+                .filter(u -> u.getId().equals(id))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private void save() throws IOException {
+        UserList userList = new UserList(users);
+        FileUtils.writeToXml(FILE_NAME, userList);
+
+        mapUsersByUsername();
+        mapUsersByFullName();
+    }
+
+    private List<User> loadFromFile() throws IOException {
+        return FileUtils.readFromXml(FILE_NAME, User.class);
+    }
+
+    private void mapUsersByUsername() {
+        usersByUsername = users.stream()
+                .filter(User::isActive)
+                .collect(Collectors.toMap(
+                        User::getUsername,
+                        Function.identity()
+                ));
+    }
+
+    private void mapUsersByFullName() {
+        usersByFullName = users.stream()
+                .filter(User::isActive)
+                .collect(Collectors.groupingBy(User::getFullName));
     }
 }

@@ -4,6 +4,7 @@ import uz.pdp.abstraction.CartItemAbstract;
 import uz.pdp.base.BaseService;
 import uz.pdp.exception.InvalidCartException;
 import uz.pdp.exception.InvalidCartItemException;
+import uz.pdp.function.CheckedBiConsumer;
 import uz.pdp.model.Cart;
 import uz.pdp.model.Product;
 import uz.pdp.util.FileUtils;
@@ -13,6 +14,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 
 public class CartService implements BaseService<Cart> {
@@ -29,126 +32,111 @@ public class CartService implements BaseService<Cart> {
 
     @Override
     public void add(Cart cart) throws IOException, InvalidCartException {
-        if (findByCustomerId(cart.getCustomerId()) == null) {
-            carts.add(cart);
-
-            save();
-        } else {
+        if (findByCustomerId(cart.getCustomerId()) != null) {
             throw new InvalidCartException("Cart for this customer already exists.");
         }
+
+        carts.add(cart);
+
+        save();
     }
 
     @Override
     public Cart get(UUID id) {
-        for (Cart cart : carts) {
-            if (cart.isActive() && cart.getId().equals(id)) {
-                return cart;
-            }
-        }
-        return null;
+        return carts.stream()
+                .filter(Cart::isActive)
+                .filter(c -> c.getId().equals(id))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
     public List<Cart> getAll() {
-        List<Cart> cartList = new ArrayList<>();
-        for (Cart cart : carts) {
-            if (cart.isActive()) {
-                cartList.add(cart);
-            }
-        }
-
-        return cartList;
+        return carts.stream()
+                .filter(Cart::isActive)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     @Override
     public boolean update(UUID id, Cart cart) throws IOException {
-        Cart found = get(id);
-        if (found != null) {
-            found.setPaid(cart.isPaid());
-
-            save();
-            return true;
+        Cart existing = get(id);
+        if (existing == null) {
+            return false;
         }
-        return false;
+
+        existing.setPaid(cart.isPaid());
+        existing.touch();
+
+        save();
+
+        return true;
     }
 
     @Override
     public void remove(UUID id) throws IOException {
         Cart existing = get(id);
-        if (existing != null) {
-            existing.setActive(false);
-
-            save();
+        if (existing == null) {
+            return;
         }
+
+        existing.setActive(false);
+        existing.touch();
+
+        save();
     }
 
     @Override
-    public void clear() throws IOException {
-        carts = new ArrayList<>();
+    public void clearAndSave() throws IOException {
+        carts.clear();
         save();
     }
 
     public Cart findByCustomerId(UUID id) {
-        for (Cart cart : carts) {
-            if (cart.isActive() && cart.getCustomerId().equals(id)) {
-                return cart;
-            }
-        }
-        return null;
+        return carts.stream()
+                .filter(Cart::isActive)
+                .filter(c -> c.getCustomerId().equals(id))
+                .findFirst()
+                .orElse(null);
     }
 
-    private boolean isValidCart(Cart cart, ProductService productService) {
-        if (cart == null
-                || cart.isPaid()
-                || cart.getItems() == null
-                || cart.getItems().isEmpty()) {
-            return false;
+    public boolean isInvalidAndSanitizeIfTrue(Cart cart, Function<UUID, Product> getProductById) throws IOException {
+        if (cart == null || cart.isPaid() || cart.getItems() == null || cart.getItems().isEmpty()) {
+            return true;
         }
 
         for (Item item : cart.getItems()) {
-            Product product = productService.get(item.getProductId());
+            Product product = getProductById.apply(item.getProductId());
             if (item.getQuantity() > product.getQuantity()) {
                 sanitize(cart, product);
 
-                return false;
+                return true;
             }
         }
 
-        return true;
+        return false;
     }
 
-    private void sanitize(Cart cart, Product product) {
-        if (product == null
-                || !product.isActive()
-                || product.getQuantity() <= 0) {
+    private void sanitize(Cart cart, Product product) throws IOException {
+        if (product == null || !product.isActive() || product.getQuantity() <= 0) {
             CartItemAbstract cartItemAbstract = new CartItemAbstract(cart);
             cartItemAbstract.removeItemFromCart(product);
-        }
-    }
-
-    public void checkoutCart(
-            Cart cart,
-            ProductService productService
-    ) throws IOException,
-            InvalidCartItemException {
-        if (isValidCart(cart, productService)) {
-            CartItemAbstract cartItemAbstract = new CartItemAbstract(cart);
-            cartItemAbstract.buyItemsInCart(productService);
-            remove(cart.getId());
+            cart.touch();
 
             save();
-        } else {
-            throw new InvalidCartItemException("Product is out of stock or quantity is invalid.\nItem removed from cart.");
         }
     }
 
-    public void addItemToCart(
-            UUID customerId,
-            Product product,
-            int quantity
-    ) throws InvalidCartException,
-            IllegalArgumentException,
-            IOException {
+    public void checkoutCart(Cart cart, CheckedBiConsumer<UUID, Integer> purchaseProductsByItemInfo)
+            throws IOException, InvalidCartItemException {
+        CartItemAbstract cartItemAbstract = new CartItemAbstract(cart);
+        cartItemAbstract.buyItemsInCart(purchaseProductsByItemInfo);
+        remove(cart.getId());
+
+        save();
+    }
+
+    public void addItemToCart(UUID customerId, Product product, int quantity)
+            throws InvalidCartException, IllegalArgumentException, IOException {
         Cart cart = findByCustomerId(customerId);
         if (cart == null) {
             throw new InvalidCartException("Cart not found for given customer ID.");
@@ -156,28 +144,27 @@ public class CartService implements BaseService<Cart> {
 
         CartItemAbstract cartItemAbstract = new CartItemAbstract(cart);
         cartItemAbstract.addItemToCart(product, quantity);
+        cart.touch();
 
         save();
     }
 
-    public void removeItemFromCart(
-            Cart cart,
-            Product product
-    ) throws InvalidCartException,
-            IOException {
+    public void removeItemFromCart(Cart cart, Product product)
+            throws InvalidCartException, IOException {
         CartItemAbstract cartItemAbstract = new CartItemAbstract(cart);
         cartItemAbstract.removeItemFromCart(product);
+        cart.touch();
 
         save();
     }
 
     public void removeByCustomerId(UUID id) throws IOException {
         Cart cart = findByCustomerId(id);
-        if (cart != null) {
-            remove(cart.getId());
-        } else {
+        if (cart == null) {
             throw new InvalidCartException("Cart not found for given customer ID.");
         }
+
+        remove(cart.getId());
     }
 
     private void save() throws IOException {

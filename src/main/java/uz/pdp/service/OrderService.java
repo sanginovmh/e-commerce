@@ -1,13 +1,22 @@
 package uz.pdp.service;
 
+import uz.pdp.abstraction.OrderBuilder;
 import uz.pdp.base.BaseService;
+import uz.pdp.exception.InvalidOrderException;
+import uz.pdp.model.Cart;
 import uz.pdp.model.Order;
+import uz.pdp.model.Product;
+import uz.pdp.model.User;
+import uz.pdp.model.User.UserInfo;
 import uz.pdp.util.FileUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 
 public class OrderService implements BaseService<Order> {
@@ -30,28 +39,21 @@ public class OrderService implements BaseService<Order> {
 
     @Override
     public Order get(UUID id) {
-        for (Order order : orders) {
-            if (order.isActive() && order.getId().equals(id)) {
-                return order;
-            }
-        }
-        return null;
+        return orders.stream()
+                .filter(o -> o.isActive() && o.getId().equals(id))
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
     public List<Order> getAll() {
-        List<Order> actives = new ArrayList<>();
-        for (Order order : orders) {
-            if (order.isActive()) {
-                actives.add(order);
-            }
-        }
-        return actives;
+        return orders.stream()
+                .filter(Order::isActive)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     @Override
-    public boolean update(UUID id, Order order) throws IOException {
-
+    public boolean update(UUID id, Order order) {
         return false;
     }
 
@@ -60,63 +62,55 @@ public class OrderService implements BaseService<Order> {
         Order existing = get(id);
         if (existing != null) {
             existing.setActive(false);
+            existing.touch();
 
             save();
         }
     }
 
     @Override
-    public void clear() throws IOException {
-        orders = new ArrayList<>();
+    public void clearAndSave() throws IOException {
+        orders.clear();
         save();
     }
 
+    public Order buildNewOrder(
+            Cart cart, User user,
+            Function<UUID, User> getIgnoreActiveSellerById,
+            Function<UUID, Product> getProductById
+    ) throws IOException, InvalidOrderException {
+        OrderBuilder orderBuilder = new OrderBuilder(cart);
+        return orderBuilder.buildNewOrder(
+                new UserInfo(user.getId(), user.getUsername(), user.getFullName()),
+                getIgnoreActiveSellerById,
+                getProductById);
+    }
+
     public List<Order> getByCustomerId(UUID id) {
-        List<Order> ordersByCustomers = new ArrayList<>();
-        for (Order order : orders) {
-            if (order.isActive()
-                    && order.getCustomer().getId().equals(id)) {
-                ordersByCustomers.add(order);
-            }
-        }
+        Predicate<Order> matchesId = o -> o.getCustomer().getId().equals(id);
 
-        return ordersByCustomers;
+        return orders.stream()
+                .filter(Order::isActive)
+                .filter(matchesId)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public List<Order> getBySellerId(UUID id) {
-        List<Order> ordersBySellers = new ArrayList<>();
-        for (Order order : orders) {
-            if (order.isActive()
-                    && order.getSeller().getId().equals(id)) {
-                ordersBySellers.add(order);
-            }
-        }
+    public List<Order> filterTotalHigherThan(double amount) {
+        Predicate<Order> totalHigherThanAmount = o -> o.getGrandTotal() > amount;
 
-        return ordersBySellers;
+        return orders.stream()
+                .filter(Order::isActive)
+                .filter(totalHigherThanAmount)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    public List<Order> filterHigherThan(double amount) {
-        List<Order> filtered = new ArrayList<>();
-        for (Order order : orders) {
-            if (order.isActive()
-                    && order.getGrandTotal() > amount) {
-                filtered.add(order);
-            }
-        }
+    public List<Order> filterTotalLowerThan(double amount) {
+        Predicate<Order> totalLowerThanAmount = o -> o.getGrandTotal() < amount;
 
-        return filtered;
-    }
-
-    public List<Order> filterLowerThan(double amount) {
-        List<Order> filtered = new ArrayList<>();
-        for (Order order : orders) {
-            if (order.isActive()
-                    && order.getGrandTotal() < amount) {
-                filtered.add(order);
-            }
-        }
-
-        return filtered;
+        return orders.stream()
+                .filter(Order::isActive)
+                .filter(totalLowerThanAmount)
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     private void save() throws IOException {
