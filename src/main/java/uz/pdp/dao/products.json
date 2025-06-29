@@ -1,1 +1,11 @@
-[]
+[ {
+  "id" : "7edeb174-c9ee-4f80-ad67-9176b3458861",
+  "createdAt" : "2025-06-29T13:48:25.86",
+  "updatedAt" : "2025-06-29T13:48:25.861Z",
+  "active" : true,
+  "name" : "GTR",
+  "price" : 12000.0,
+  "quantity" : 12,
+  "categoryId" : "7714511f-8c54-4059-87fa-06a2f264850e",
+  "sellerId" : "b7259154-6b30-4183-b0e4-8a64edcc4318"
+} ]
