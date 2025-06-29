@@ -1,11 +1,9 @@
 package uz.pdp.renderer;
 
-import lombok.RequiredArgsConstructor;
 import uz.pdp.model.Category;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 public final class CategoryRenderer {
     public static String render(List<Category> list) {
         StringBuilder sb = new StringBuilder();

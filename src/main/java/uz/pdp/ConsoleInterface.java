@@ -1,28 +1,22 @@
 package uz.pdp;
 
 import uz.pdp.exception.InvalidCategoryException;
+import uz.pdp.exception.InvalidOrderException;
 import uz.pdp.exception.InvalidProductException;
-import uz.pdp.model.Cart;
-import uz.pdp.model.Category;
-import uz.pdp.model.Product;
-import uz.pdp.model.User;
-import uz.pdp.renderer.CartRenderer;
-import uz.pdp.renderer.CategoryRenderer;
-import uz.pdp.renderer.ProductRenderer;
-import uz.pdp.renderer.UserRenderer;
-import uz.pdp.service.CartService;
-import uz.pdp.service.CategoryService;
-import uz.pdp.service.ProductService;
-import uz.pdp.service.UserService;
+import uz.pdp.model.*;
+import uz.pdp.renderer.*;
+import uz.pdp.service.*;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Predicate;
 
-public class Alpha {
+public class ConsoleInterface {
     static UserService userService = new UserService();
     static CartService cartService = new CartService();
     static ProductService productService = new ProductService();
     static CategoryService categoryService = new CategoryService();
+    static OrderService orderService = new OrderService();
 
     static Scanner strScanner = new Scanner(System.in);
     static Scanner numScanner = new Scanner(System.in);
@@ -33,6 +27,7 @@ public class Alpha {
         initialPage();
     }
 
+    @SuppressWarnings("InfiniteRecursion")
     public static void initialPage() {
         System.out.print("""
                 --- Welcome to Alpha! ---
@@ -124,6 +119,7 @@ public class Alpha {
         dashboardPage();
     }
 
+    @SuppressWarnings("InfiniteRecursion")
     public static void dashboardPage() {
         if (currentUser.getRole().equals(User.UserRole.ADMIN)) {
             System.out.print("""
@@ -138,9 +134,10 @@ public class Alpha {
                     
                     7. Search Super
                     8. Search Global
+                    9. View Orders
                     
-                    9. Logout
-                    10. Exit
+                    10. Logout
+                    0. Exit
                     
                     input %\s""");
 
@@ -152,9 +149,10 @@ public class Alpha {
                 case "5" -> browseCategories();
                 case "6" -> createNewAdminPage();
                 case "7" -> searchSuperPage();
-                case "8" -> searchGlobalPage();
-                case "9" -> logout();
-                case "10" -> System.exit(0);
+                case "8" -> searchDash();
+                case "9" -> viewAllOrders();
+                case "10" -> logout();
+                case "0" -> System.exit(0);
 
                 default -> {
                     System.out.println("Invalid input, try again!");
@@ -180,7 +178,7 @@ public class Alpha {
                 case "2" -> viewYourProductsPage();
                 case "3" -> removeSellerProductPage();
                 case "4" -> addNewProductPage();
-                case "5" -> searchGlobalPage();
+                case "5" -> searchDash();
                 case "6" -> renameProductPage();
                 case "7" -> logout();
 
@@ -193,17 +191,19 @@ public class Alpha {
             System.out.print("""
                     \n--- Customer Dashboard ---
                     1. Browse
-                    2. View Cart
-                    3. Search Global
+                    2. View Your Cart
+                    3. View Previous Orders
+                    4. Search Global
                     
-                    4. Logout
+                    5. Logout
                     
                     input %\s""");
             switch (strScanner.nextLine()) {
                 case "1" -> browseCategories();
                 case "2" -> viewCustomerCartPage();
-                case "3" -> searchGlobalPage();
-                case "4" -> logout();
+                case "3" -> viewCustomerOrdersPage();
+                case "4" -> searchDash();
+                case "5" -> logout();
 
                 default -> {
                     System.out.println("Invalid input, try again!");
@@ -359,8 +359,7 @@ public class Alpha {
                 currentId = CategoryService.ROOT_UUID;
             }
 
-
-            List<Category> children = categoryService.getDecendents(currentId);
+            List<Category> children = categoryService.getDescendants(currentId);
             System.out.println("\n- " + current.getName() + " -");
 
             if (!children.isEmpty()) {
@@ -371,7 +370,7 @@ public class Alpha {
             }
 
             System.out.print("Go to ('.' to go back): ");
-            String input = strScanner.nextLine().toLowerCase();
+            String input = strScanner.nextLine();
 
             if (input.trim().equals(".")) {
                 if (path.size() > 1) {
@@ -389,7 +388,7 @@ public class Alpha {
                 continue;
             }
 
-            if (categoryService.hasSubcategories(selected.getId())) {
+            if (categoryService.hasDescendants(selected.getId())) {
                 path.push(selected);
             } else {
                 productsDisplayPage(selected);
@@ -401,13 +400,13 @@ public class Alpha {
         System.out.println("\n- " + current.getName() + " -");
 
         List<Product> products = productService.getByCategoryId(current.getId());
-        if (products.isEmpty()) {
-            System.out.println("[no products yet]");
+        if (products == null || products.isEmpty()) {
+            System.out.print("[no products yet]");
             waitClick();
             return;
         }
 
-        System.out.println(ProductRenderer.render(products));
+        System.out.print(ProductRenderer.render(products));
 
         if (currentUser.getRole() != User.UserRole.CUSTOMER) {
             waitClick();
@@ -493,13 +492,12 @@ public class Alpha {
             return;
         }
 
-        printLastCategories();
+        printCategoriesEmptyOfProducts();
 
         System.out.print("Parent Category (or 'Root'): ");
         String parentName = strScanner.nextLine().toLowerCase();
 
         UUID parentId = CategoryService.ROOT_UUID;
-
 
         if (!parentName.equalsIgnoreCase("root")) {
             Category parent = categoryService.findByName(parentName);
@@ -685,20 +683,63 @@ public class Alpha {
         System.out.println("\n--- Search Super ---");
         System.out.print("Enter search term: ");
         // String searchTerm = strScanner.nextLine();
-        // TODO implement search functionality
+        // TODO implement search across users, products, and categories all together
     }
 
-    public static void searchGlobalPage() {
-        System.out.println("\n--- Search Global ---");
-        System.out.print("Enter search term: fd");
-        // String searchTerm = strScanner.nextLine();
-        // TODO implement global search functionality
+    public static void searchDash() {
+        // TODO let user choose what to search for (users, products)
+    }
+
+    public static void searchUsers() {
+        System.out.println("\n--- Search Users ---");
+
+        System.out.print("Enter search term: ");
+        String keyword = strScanner.nextLine();
+
+        List<User> usersMatched = userService.searchUsersByUsernameOrFullName(keyword);
+        if (usersMatched.isEmpty()) {
+            System.out.println("[no users found]");
+            waitClick();
+            return;
+        }
+
+        System.out.print(UserRenderer.render(usersMatched));
+
+        // TODO if ADMIN, let interact with chosen user
+    }
+
+    public static void viewAllOrders() {
+        System.out.println("\n--- All Orders ---");
+
+        List<Order> orders = orderService.getAll();
+        if (orders.isEmpty()) {
+            System.out.println("[no orders yet]");
+            waitClick();
+            return;
+        }
+
+        System.out.println(OrderRenderer.render(orders));
+        waitClick();
+    }
+
+    public static void viewCustomerOrdersPage() {
+        System.out.println("\n--- Previous Orders ---");
+
+        List<Order> orders = orderService.getByCustomerId(currentUser.getId());
+        if (orders.isEmpty()) {
+            System.out.println("[no orders yet]");
+            waitClick();
+            return;
+        }
+
+        System.out.println(OrderRenderer.render(orders));
+        waitClick();
     }
 
     public static void viewYourProductsPage() {
         System.out.println("\n--- Your Products ---");
 
-        List<Product> products = productService.getBySeller(currentUser.getId());
+        List<Product> products = productService.getBySellerId(currentUser.getId());
         if (products.isEmpty()) {
             System.out.println("You have no products listed.");
             waitClick();
@@ -777,7 +818,7 @@ public class Alpha {
         }
 
         UUID categoryId = category.getId();
-        if (categoryService.hasSubcategories(categoryId)) {
+        if (categoryService.hasDescendants(categoryId)) {
             System.out.println("Category contains subcategories.");
             waitClick();
             return;
@@ -828,10 +869,38 @@ public class Alpha {
         }
 
         try {
-            cartService.checkoutCart(cart, productService);
+            if (cartService.isInvalidAndSanitizeIfTrue(cart, productService::get)) {
+                System.out.println("Product is out of stock or quantity is invalid. Item removed from cart.");
+                waitClick();
+                return;
+            }
+
+            cartService.checkoutCart(cart, productService::purchaseProducts);
+
+            createNewOrder(cart);
+
             System.out.println("Checkout successful! Thank you for your purchase.");
         } catch (Exception e) {
             System.out.println("Checkout failed: " + e.getMessage());
+        }
+        waitClick();
+    }
+
+    public static void createNewOrder(Cart cart) {
+        try {
+            Order order = orderService.buildNewOrder(
+                    cart,
+                    currentUser,
+                    userService::getIgnoreActive,
+                    productService::get
+            );
+
+            orderService.add(order);
+            System.out.print("Order created successfully.");
+        } catch (IOException e) {
+            System.out.print("Error reading file: " + e.getMessage());
+        } catch (InvalidOrderException e) {
+            System.out.print("Could not create order: " + e.getMessage());
         }
         waitClick();
     }
@@ -868,6 +937,16 @@ public class Alpha {
         System.out.println("\n- Available Categories -");
 
         List<Category> categories = categoryService.getLastCategories();
+
+        System.out.println(CategoryRenderer.render(categories));
+    }
+
+    public static void printCategoriesEmptyOfProducts() {
+        System.out.println("\n- Available Categories -");
+
+        Predicate<Category> isEmptyOfProducts = category -> productService.isCategoryEmpty(category.getId());
+        List<Category> categories = categoryService.getCategoriesEmptyOfProducts(isEmptyOfProducts);
+
         System.out.println(CategoryRenderer.render(categories));
     }
 
