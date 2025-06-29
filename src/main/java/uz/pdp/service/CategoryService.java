@@ -108,7 +108,7 @@ public class CategoryService implements BaseService<Category> {
     public List<Category> getCategoriesEmptyOfProducts(Predicate<Category> isEmptyOfProducts) {
         return categories.stream()
                 .filter(isEmptyOfProducts)
-                .toList();
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public Category findByName(String name) {

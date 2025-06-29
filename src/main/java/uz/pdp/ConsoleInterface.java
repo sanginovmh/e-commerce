@@ -3,8 +3,8 @@ package uz.pdp;
 import uz.pdp.exception.InvalidCategoryException;
 import uz.pdp.exception.InvalidOrderException;
 import uz.pdp.exception.InvalidProductException;
-import uz.pdp.model.*;
 import uz.pdp.renderer.*;
+import uz.pdp.model.*;
 import uz.pdp.service.*;
 
 import java.io.IOException;
@@ -29,24 +29,28 @@ public class ConsoleInterface {
 
     @SuppressWarnings("InfiniteRecursion")
     public static void initialPage() {
-        System.out.print("""
-                --- Welcome to Alpha! ---
-                1. Login
-                2. Register
-                
-                3. Exit
-                
-                input %\s""");
+        System.out.println("--- Welcome to Alpha! ---");
+        System.out.println("1. Login");
+        System.out.println("2. Register");
+        System.out.println("3. Exit\n\n");
+        System.out.println("input % ");
 
         switch (strScanner.nextLine()) {
-            case "1" -> loginPage();
-            case "2" -> registerPage();
-            case "3" -> System.exit(0);
+            case "1":
+                loginPage();
+                break;
 
-            default -> {
+            case "2":
+                registerPage();
+                break;
+            case "3":
+                System.exit(0);
+                break;
+
+            default:
                 System.out.println("Invalid input, try again!");
                 waitClick();
-            }
+                break;
         }
 
         initialPage();
@@ -92,15 +96,18 @@ public class ConsoleInterface {
 
         User.UserRole role;
         switch (roleInput) {
-            case "C" -> role = User.UserRole.CUSTOMER;
-            case "S" -> role = User.UserRole.SELLER;
+            case "C":
+                role = User.UserRole.CUSTOMER;
+                break;
+            case "S":
+                role = User.UserRole.SELLER;
+                break;
 
-            default -> {
+            default:
                 System.out.println("Invalid role, try again!");
                 waitClick();
                 registerPage();
                 return;
-            }
         }
 
         User newUser = new User(fullName, username, password, role);
@@ -122,93 +129,138 @@ public class ConsoleInterface {
     @SuppressWarnings("InfiniteRecursion")
     public static void dashboardPage() {
         if (currentUser.getRole().equals(User.UserRole.ADMIN)) {
-            System.out.print("""
-                    \n--- Admin Dashboard ---
-                    1. Manage Users
-                    2. Manage Categories
-                    3. Manage Products
-                    4. Manage Carts
-                    
-                    5. Browse Categories
-                    6. Create New Admin
-                    
-                    7. Search Super
-                    8. Search Global
-                    9. View Orders
-                    
-                    10. Logout
-                    0. Exit
-                    
-                    input %\s""");
+            System.out.println("\n--- Admin Dashboard ---");
+            System.out.println("1. Manage Users");
+            System.out.println("2. Manage Categories");
+            System.out.println("3. Manage Products");
+            System.out.println("4. Manage Carts\n");
+
+            System.out.println("5. Browse Categories");
+            System.out.println("6. Create New Admin\n");
+
+            System.out.println("7. Search Super");
+            System.out.println("8. Search Global");
+            System.out.println("9. View Orders\n");
+
+            System.out.println("10. Logout");
+            System.out.println("0. Exit\n\n");
+
+            System.out.println("input % ");
 
             switch (strScanner.nextLine()) {
-                case "1" -> manageUsersPage();
-                case "2" -> manageCategoriesPage();
-                case "3" -> manageProductsPage();
-                case "4" -> manageCartsPage();
-                case "5" -> browseCategories();
-                case "6" -> createNewAdminPage();
-                case "7" -> searchSuperPage();
-                case "8" -> searchDash();
-                case "9" -> viewAllOrders();
-                case "10" -> logout();
-                case "0" -> System.exit(0);
+                case "1":
+                    manageUsersPage();
+                    break;
+                case "2":
+                    manageCategoriesPage();
+                    break;
+                case "3":
+                    manageProductsPage();
+                    break;
+                case "4":
+                    manageCartsPage();
+                    break;
+                case "5":
+                    browseCategories();
+                    break;
+                case "6":
+                    createNewAdminPage();
+                    break;
+                case "7":
+                    searchSuperPage();
+                    break;
+                case "8":
+                    searchDash();
+                    break;
+                case "9":
+                    viewAllOrders();
+                    break;
+                case "10":
+                    logout();
+                    break;
+                case "0":
+                    System.exit(0);
+                    break;
 
-                default -> {
+                default:
                     System.out.println("Invalid input, try again!");
                     waitClick();
-                }
+                    break;
             }
         } else if (currentUser.getRole().equals(User.UserRole.SELLER)) {
-            System.out.print("""
-                    \n--- Seller Dashboard ---
-                    1. Browse Products
-                    2. View Your Products
-                    3. Remove Product
-                    4. Add New Product
-                    5. Search Global
-                    6. Change Your Product Name
-                    
-                    7. Logout
-                    
-                    input %\s""");
+            System.out.println("\n-- - Seller Dashboard-- -");
+            System.out.println("1. Browse Products");
+            System.out.println("2. View Your Products");
+            System.out.println("3. Remove Product");
+            System.out.println("4. Add New Product");
+            System.out.println("5. Search Global");
+            System.out.println("6. Change Your Product Name\n");
+
+            System.out.println("7. Logout\n\n");
+
+            System.out.println("input % ");
 
             switch (strScanner.nextLine()) {
-                case "1" -> browseCategories();
-                case "2" -> viewYourProductsPage();
-                case "3" -> removeSellerProductPage();
-                case "4" -> addNewProductPage();
-                case "5" -> searchDash();
-                case "6" -> renameProductPage();
-                case "7" -> logout();
+                case "1":
+                    browseCategories();
+                    break;
+                case "2":
+                    viewYourProductsPage();
+                    break;
+                case "3":
+                    removeSellerProductPage();
+                    break;
+                case "4":
+                    addNewProductPage();
+                    break;
+                case "5":
+                    searchDash();
+                    break;
+                case "6":
+                    renameProductPage();
+                    break;
+                case "7":
+                    logout();
+                    break;
 
-                default -> {
+                default:
                     System.out.println("Invalid input, try again!");
                     waitClick();
-                }
+                    break;
+
             }
         } else if (currentUser.getRole().equals(User.UserRole.CUSTOMER)) {
-            System.out.print("""
-                    \n--- Customer Dashboard ---
-                    1. Browse
-                    2. View Your Cart
-                    3. View Previous Orders
-                    4. Search Global
-                    
-                    5. Logout
-                    
-                    input %\s""");
-            switch (strScanner.nextLine()) {
-                case "1" -> browseCategories();
-                case "2" -> viewCustomerCartPage();
-                case "3" -> viewCustomerOrdersPage();
-                case "4" -> searchDash();
-                case "5" -> logout();
+            System.out.print("\n-- - Customer Dashboard-- -");
+            System.out.println("1. Browse");
+            System.out.println("2. View Your Cart");
+            System.out.println("3. View Previous Orders");
+            System.out.println("4. Search Global\n");
 
-                default -> {
+            System.out.println("5. Logout\n\n");
+
+            System.out.println("input % ");
+            switch (strScanner.nextLine()) {
+                case "1":
+                    browseCategories();
+                    break;
+                case "2":
+                    viewCustomerCartPage();
+                    break;
+                case "3":
+                    viewCustomerOrdersPage();
+                    break;
+                case "4":
+                    searchDash();
+                    break;
+                case "5":
+                    logout();
+                    break;
+
+                default:
                     System.out.println("Invalid input, try again!");
                     waitClick();
-                }
+                    break;
+
             }
         }
 
@@ -246,27 +298,36 @@ public class ConsoleInterface {
     }
 
     public static void manageCategoriesPage() {
-        System.out.print("""
-                \n--- Manage Categories ---
-                1. View All Categories
-                2. Browse Categories
-                3. Create Category
-                4. Remove Category
-                5. Rename Category
-                input %\s""");
+        System.out.print("\n-- - Manage Categories-- -");
+        System.out.println(" 1. View All Categories");
+        System.out.println(" 2. Browse Categories");
+        System.out.println(" 3. Create Category");
+        System.out.println(" 4. Remove Category");
+        System.out.println(" 5. Rename Category\n\n");
+        System.out.println(" input % ");
 
         switch (strScanner.nextLine()) {
-            case "1" -> displayAllCategoriesPage();
-            case "2" -> browseCategories();
-            case "3" -> createCategoryPage();
-            case "4" -> removeCategoryPage();
-            case "5" -> renameCategoryPage();
+            case "1":
+                displayAllCategoriesPage();
+                break;
+            case "2":
+                browseCategories();
+                break;
+            case "3":
+                createCategoryPage();
+                break;
+            case "4":
+                removeCategoryPage();
+                break;
+            case "5":
+                renameCategoryPage();
+                break;
 
-            default -> {
+            default:
                 System.out.println("Invalid input, try again!");
                 waitClick();
                 manageCategoriesPage();
-            }
+                break;
         }
     }
 
