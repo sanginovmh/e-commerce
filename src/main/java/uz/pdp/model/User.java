@@ -17,9 +17,6 @@ public class User extends BaseModel {
         ADMIN,
     }
 
-    //public record UserInfo(UUID id, String username, String fullName) {}
-    //public UserInfo userInfo;
-
     private String fullName;
     private String username;
     private String password;
