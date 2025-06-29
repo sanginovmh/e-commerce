@@ -7,9 +7,8 @@ import uz.pdp.model.Cart;
 import uz.pdp.model.Order;
 import uz.pdp.model.Product;
 import uz.pdp.model.User;
-import uz.pdp.model.User.UserInfo;
+import uz.pdp.record.UserInfo;
 import uz.pdp.util.FileUtils;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
